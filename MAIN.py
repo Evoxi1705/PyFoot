@@ -40,8 +40,7 @@ while run:
         else:
             x += velocity
 
-    if not(isJump):
-
+    if not(isJump): #prevents moving up/down while in air
         if keys[pygame.K_UP]:
             if y == 0:
                 continue
@@ -56,7 +55,8 @@ while run:
         #jump trigger
         if keys[pygame.K_SPACE]:
             isJump = True
-    else:
+            
+    else: #Actual jump function
         if jumpCount >= -10:
             neg = 1
             if jumpCount < 0:
