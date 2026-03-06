@@ -9,7 +9,7 @@ pygame.display.set_caption("Main Menu")
 x = 50
 y = 50
 WIDTH, HEIGHT = 40, 30
-velocity = 5
+velocity = 20
 
 #jumping code
 isJump = False
