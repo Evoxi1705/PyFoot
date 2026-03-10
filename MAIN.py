@@ -2,23 +2,22 @@ import pygame
 
 pygame.init()
 
-window = pygame.display.set_mode((1000, 800))
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 800
+window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Main Menu")
 
-#character attributes
-x = 50
-y = 50
-WIDTH, HEIGHT = 40, 30
+# Create a Rect object: (x, y, width, height)
+player = pygame.Rect(50, 50, 40, 30)
 velocity = 20
 
-#jumping code
+# Jumping variables
 isJump = False
 jumpCount = 10
 
-#game loop
 run = True
 while run:
-    pygame.time.delay(100)
+    pygame.time.delay(30) 
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -26,52 +25,46 @@ while run:
     
     keys = pygame.key.get_pressed()
     
-    #moving our charachter
-    if keys[pygame.K_LEFT]:
-        #keeping him inside the box
-        if x == 0:
-            continue
-        else:
-            x -= velocity
+    # Horizontal Movement with Boundary Checks
+    if keys[pygame.K_LEFT] and player.left > 0:
+        player.x -= velocity
+    if keys[pygame.K_RIGHT] and player.right < SCREEN_WIDTH:
+        player.x += velocity
 
-    if keys[pygame.K_RIGHT]:
-        if x == 1000:
-            continue
-        else:
-            x += velocity
-
-    if not(isJump): #prevents moving up/down while in air
-        if keys[pygame.K_UP]:
-            if y == 0:
-                continue
-            else:
-                y -= velocity
-
-        if keys[pygame.K_DOWN]:
-            if y == 800:
-                continue
-            else:
-                y += velocity
-        #jump trigger
+    # Vertical Movement and Jumping
+    if not isJump:
+        if keys[pygame.K_UP] and player.top > 0:
+            player.y -= velocity
+        if keys[pygame.K_DOWN] and player.bottom < SCREEN_HEIGHT:
+            player.y += velocity
+        
         if keys[pygame.K_SPACE]:
             isJump = True
-            
-    else: #Actual jump function
+    else:
+        # Jump Logic
         if jumpCount >= -10:
             neg = 1
             if jumpCount < 0:
                 neg = -1
-            y -= (jumpCount ** 2)/2 * neg
+            player.y -= (jumpCount ** 2) / 2 * neg
             jumpCount -= 1
         else:
             isJump = False
             jumpCount = 10
 
-    
+    # This ensures the player never stays outside the screen
+    if player.left < 0: 
+        player.left = 0
+    if player.right > SCREEN_WIDTH: 
+        player.right = SCREEN_WIDTH
+    if player.top < 0: 
+        player.top = 0
+    if player.bottom > SCREEN_HEIGHT: 
+        player.bottom = SCREEN_HEIGHT
 
     window.fill((255, 255, 255))
-    pygame.draw.rect(window, (255, 0, 0), (x, y, WIDTH, HEIGHT))
+    # Draw using the rect object directly
+    pygame.draw.rect(window, (255, 0, 0), player)
     pygame.display.update()
 
 pygame.quit()
-
