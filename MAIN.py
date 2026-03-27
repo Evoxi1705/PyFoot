@@ -17,6 +17,7 @@ walkLeft = [pygame.image.load('L1.png'), pygame.image.load('L2.png'), pygame.ima
 bg = pygame.image.load('bg.jpg')
 char = pygame.image.load('standing.png')
 
+
 # Jumping variables
 isJump = False
 jumpCount = 10
