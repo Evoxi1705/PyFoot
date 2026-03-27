@@ -49,3 +49,17 @@ class StaticObject(Entity):
     def draw(self, screen):
         """Drawing the objects."""
         pass
+
+class Charachter(DynamicObject):
+    def __init__(self, pos, velocity, jump_force, boost_force, boost_remaining, max_speed):
+        super().__init__(pos, velocity)
+        self.jump_force = jump_force
+        self.boost_force = boost_force
+        self.boost_remaining = boost_remaining
+        self.max_speed = max_speed
+
+    def jump(self):
+        pass
+
+    def boost():
+        pass
