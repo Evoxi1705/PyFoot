@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 from constants import GRAVITY
+from class_tools import Vector2
+
 
 class Entity(ABC):
     """
@@ -22,7 +24,7 @@ class DynamicObject(Entity):
     """
     def __init__(self, pos, velocity):
         super().__init__(pos)
-        self.velocity = velocity
+        self.velocity = Vector2(velocity)
 
     def update(self):
         """Updating the position of the object."""
@@ -50,7 +52,7 @@ class StaticObject(Entity):
         """Drawing the objects."""
         pass
 
-class Charachter(DynamicObject):
+class Character(DynamicObject):
     def __init__(self, pos, velocity, jump_force, boost_force, boost_remaining, max_speed):
         super().__init__(pos, velocity)
         self.jump_force = jump_force
@@ -61,5 +63,5 @@ class Charachter(DynamicObject):
     def jump(self):
         pass
 
-    def boost():
+    def boost(self):
         pass
