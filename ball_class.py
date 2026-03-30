@@ -1,7 +1,7 @@
-import base_classes
+from base_classes import *
 import pygame 
 
-class Ball:
+class Ball(DynamicObject):
     def __init__(self,pos,velocity, radius, bounce):
         super().__init__(pos,velocity)
         self.radius = radius
