@@ -1,9 +1,8 @@
 import pygame
+from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 
 pygame.init()
 
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 800
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Main Menu")
 
