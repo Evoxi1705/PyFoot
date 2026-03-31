@@ -2,10 +2,9 @@ from base_classes import *
 import pygame 
 
 class Ball(DynamicObject):
-    def __init__(self,pos,velocity, radius, bounce):
+    def __init__(self,pos,velocity, radius):
         super().__init__(pos,velocity)
         self.radius = radius
-        self.bounce = bounce
         
     def draw(self,screen):
         pygame.draw.circle(screen,self.radius)
