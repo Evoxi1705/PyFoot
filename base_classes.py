@@ -92,7 +92,14 @@ class Character(DynamicObject):
         self.max_speed = max_speed
 
     def boost(self):
-        pass
+        # need to create a part where you decelerate 
+        # think about the time boosted
+        # think about the cooldown
+        while time_boosted < self.boost_time:
+            while self.velocity.x < self.max_speed:
+                self.velocity.x += self.boost_force
+            self.velocity.x = self.max_speed
+
 
     def jump(self):
         """Ability for a character to jump."""
