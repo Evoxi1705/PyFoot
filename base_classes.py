@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from constants import SCREEN_HEIGHT, JUMP_FORCE, BOOST_FORCE, BOOST_TIME, MAX_SPEED, GRAVITY
+import pygame
+from constants import *
 from class_tools import Vector2
 
 
@@ -72,7 +73,7 @@ class Character(DynamicObject):
     Attributes:
         jump_force: the power of the jump of a character
         boost_force: the power of the boost of a character
-        boost_remaining: the boost a character has left (in seconds)
+        boost_time: the boost a character has left (in seconds)
         max_speed: the maximum speed a character can attain (in pixel per second)
     """
     def __init__(self, 
@@ -83,22 +84,38 @@ class Character(DynamicObject):
                  jump_force=JUMP_FORCE, 
                  boost_force=BOOST_FORCE, 
                  boost_time=BOOST_TIME, 
-                 max_speed=MAX_SPEED):
+                 max_speed=MAX_SPEED,
+                 cooldown_time=COOLDOWN):
         
         super().__init__(pos, velocity, height, width)
         self.jump_force = jump_force
         self.boost_force = boost_force
         self.boost_time = boost_time
         self.max_speed = max_speed
+        self.cooldown_time = cooldown_time
+        self.is_boosting = False # Does not need to be passed as a parameter
+
+    def update(self):
+        super().update()
+        if abs(self.velocity.x) > 0.1: # Moving left means negative velocity so abs() and 0.1 is a treshold to make sure we stay above it
+            self.velocity.x = self.velocity.x*0.95
+        else:
+            self.velocity.x = 0
 
     def boost(self):
-        # need to create a part where you decelerate 
-        # think about the time boosted
-        # think about the cooldown
-        while time_boosted < self.boost_time:
-            while self.velocity.x < self.max_speed:
-                self.velocity.x += self.boost_force
-            self.velocity.x = self.max_speed
+        """Ability for a charachter to gain an acceleration along the x-axis for a defined period of time"""
+        if self.is_boosting == False:
+            self.boost_start = pygame.time.get_ticks()
+
+        if (pygame.time.get_ticks() - (self.boost_start + self.boost_time)) > self.cooldown_time:
+            if (pygame.time.get_ticks() - self.boost_start) <= self.boost_time:
+                self.is_boosting = True
+                if self.velocity.x < self.max_speed: # Applying boost
+                    self.velocity.x += self.boost_force
+                else:
+                    self.velocity.x = self.max_speed
+            else:
+                self.is_boosting = False
 
 
     def jump(self):
