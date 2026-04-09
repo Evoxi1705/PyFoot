@@ -2,6 +2,7 @@ import pygame
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 
 pygame.init()
+clock = pygame.time.Clock()
 
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Main Menu")
@@ -13,6 +14,9 @@ velocity = 20
 run = True
 while run:
     pygame.time.delay(30) 
+
+    dt = clock.tick(60) / 1000  # dt is roughly 0.016 at 60fps
+    player.update(dt)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
