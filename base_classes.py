@@ -3,51 +3,96 @@ import pygame
 from constants import *
 from class_tools import Vector2
 
+"""
+This code implements a frame-independent game object hierarchy. 
+By utilizing Delta Time (dt), physics calculations remain consistent across 
+varying hardware performance and frame rates.
+"""
 
 class Entity(ABC):
     """
     Abstract base class for all objects that exist in the game world.
     
+    Provides core spatial properties and boundary helper methods for 
+    manual collision detection.
+
     Attributes:
-        pos: position of the object
+        pos (Vector2): Current coordinates (x, y) in pixels.
+        height (int): Vertical dimension of the entity in pixels.
+        width (int): Horizontal dimension of the entity in pixels.
     """
     pos: Vector2 # Attribute hint: helps the editor remember what type it was
     height: int
     width: int
+
+    # Way to access the dimensions of the character faster
+    def get_top(self): return self.pos.y
+    def get_bottom(self): return self.pos.y + self.height
+    def get_left(self): return self.pos.x
+    def get_right(self): return self.pos.x + self.width
 
     def __init__(self, pos: Vector2, height: int, width: int):
         self.pos = pos
         self.height = height
         self.width = width
 
+    def collides_with(self, other: "Entity"):
+        """
+        Standard AABB collision check.
+        Returns True if this entity overlaps with another entity.
+        """
+        return (self.get_left() < other.get_right() and
+                self.get_right() > other.get_left() and
+                self.get_top() < other.get_bottom() and
+                self.get_bottom() > other.get_top())
+
     @abstractmethod
     def draw(self, screen):
-        """Drawing the objects."""
+        """
+        Renders the entity onto the provided Pygame surface.
+        Must be implemented by concrete subclasses.
+        """
         pass
 
 class DynamicObject(Entity):
     """
-    Class for all dynamic objects in the game world.
+    Base class for objects affected by physics, gravity, and movement.
+
+    Attributes:
+        velocity (Vector2): Current speed in pixels per second.
     """
     velocity: Vector2
 
-    def __init__(self, pos: Vector2, height, width, velocity: Vector2):
+    def __init__(self, pos: Vector2, velocity: Vector2, height, width):
         super().__init__(pos, height, width)
         self.velocity = velocity
 
-    def update(self):
-        """Updating the position of the object."""
-        self.apply_gravity()
-        self.pos += self.velocity
+    def update(self, dt):
+        """
+        Updates the object's position using Euler integration.
+        
+        Args:
+            dt (float): Delta time in seconds since the last frame.
+        """
+        self._apply_gravity(dt)
+        self._apply_movement(dt)
+        self._handle_borders()
 
-        # Preventing the object to go "through" the floor or to be "stuck" to it 
-        if self.pos.y + self.height > SCREEN_HEIGHT:
+    def _apply_movement(self, dt):
+        self.pos.x += self.velocity.x * dt
+        self.pos.y += self.velocity.y * dt
+
+    def _apply_gravity(self, dt):
+        """
+        Applies downward acceleration to the vertical velocity.
+        """
+        self.velocity.y += GRAVITY*dt
+
+    def _handle_borders(self): # The first _ means the method is meant to be local, not called outside the class
+        """ Keeps the object inside the game world. """
+        if self.get_bottom() > SCREEN_HEIGHT:
             self.pos.y = SCREEN_HEIGHT - self.height 
-            self.velocity.y = 0 
-
-    def apply_gravity(self):
-        """Applying gravity to the object."""
-        self.velocity.y += GRAVITY
+            self.velocity.y = 0
 
     @abstractmethod
     def draw(self, screen):
@@ -69,12 +114,20 @@ class StaticObject(Entity):
 class Character(DynamicObject):
     """ 
     Base class for all characters in the game world.
-    
+
+    Handles horizontal acceleration, jumping, and a state-managed boost system.
+    Horizontal drag is calculated using exponential decay for frame-independence.
+
     Attributes:
-        jump_force: the power of the jump of a character
-        boost_force: the power of the boost of a character
-        boost_time: the boost a character has left (in seconds)
-        max_speed: the maximum speed a character can attain (in pixel per second)
+        pos (Vector2): Current coordinates (x, y) in pixels.
+        velocity (Vector2): Current speed in pixels per second.
+        jump_force (float): Initial upward velocity applied during a jump.
+        boost_force (float): Acceleration added during the boost phase.
+        boost_time (int): Duration of the boost effect in milliseconds.
+        max_speed (float): Terminal horizontal velocity under normal movement.
+        max_boost_speed (float): Terminal horizontal velocity while boosting.
+        cooldown_time (int): Required delay between boosts in milliseconds.
+        is_boosting (bool): State tracker for the boost mechanic.
     """
     def __init__(self, 
                  pos: Vector2, 
@@ -83,8 +136,9 @@ class Character(DynamicObject):
                  width, 
                  jump_force=JUMP_FORCE, 
                  boost_force=BOOST_FORCE, 
-                 boost_time=BOOST_TIME, 
-                 max_speed=MAX_SPEED,
+                 boost_time=BOOST_TIME,
+                 max_speed = MAX_SPEED, 
+                 max_boost_speed=MAX_BOOST_SPEED,
                  cooldown_time=COOLDOWN):
         
         super().__init__(pos, velocity, height, width)
@@ -92,33 +146,65 @@ class Character(DynamicObject):
         self.boost_force = boost_force
         self.boost_time = boost_time
         self.max_speed = max_speed
+        self.max_boost_speed = max_boost_speed
         self.cooldown_time = cooldown_time
-        self.is_boosting = False # Does not need to be passed as a parameter
 
-    def update(self):
-        super().update()
+        self.is_boosting = False 
+        self.boost_start = 0
+
+    def update(self, dt):
+        """
+        Calculates physics and horizontal friction.
+        
+        Friction is applied via (FRICTION**(dt*60)) to ensure the character
+        slows down identically regardless of frame rate.
+        """
+        super().update(dt)
+        self._apply_friction(dt)
+    
+    def _apply_friction(self, dt):
+        """Deccelarates the character based on friction with the surface. """
         if abs(self.velocity.x) > 0.1: # Moving left means negative velocity so abs() and 0.1 is a treshold to make sure we stay above it
-            self.velocity.x = self.velocity.x*0.95
+            self.velocity.x *= (FRICTION**(dt*60))
+            # dt*60 is to represent the velocity remaining after 1/60 of a second
         else:
             self.velocity.x = 0
 
-    def boost(self):
-        """Ability for a charachter to gain an acceleration along the x-axis for a defined period of time"""
-        if self.is_boosting == False:
-            self.boost_start = pygame.time.get_ticks()
+    def move_left(self, dt):
+        """Accelerates the character to the left up to max_speed"""
+        if self.velocity.x > -self.max_speed:
+            self.velocity.x -= ACCELERATION*dt
 
-        if (pygame.time.get_ticks() - (self.boost_start + self.boost_time)) > self.cooldown_time:
-            if (pygame.time.get_ticks() - self.boost_start) <= self.boost_time:
+    def move_right(self, dt):
+        """Accelerates the character to the right up to max_speed"""
+        if self.velocity.x < self.max_speed:
+            self.velocity.x += ACCELERATION*dt
+
+    def boost(self):
+        """
+        Triggers a timed speed increase with a cooldown restriction.
+        
+        Uses pygame.time.get_ticks() to manage the duration and cooldown 
+        independently of the physics update.
+        """
+        now = pygame.time.get_ticks()
+
+        if not self.is_boosting:
+            if (now - (self.boost_start + self.boost_time)) > self.cooldown_time:
                 self.is_boosting = True
-                if self.velocity.x < self.max_speed: # Applying boost
-                    self.velocity.x += self.boost_force
-                else:
-                    self.velocity.x = self.max_speed
+                self.boost_start = now
+
+        if self.is_boosting:
+            if (now - self.boost_start) <= self.boost_time:
+                # Checks wether we are moving to the right or to the left
+                direction = 1 if self.velocity.x >= 0 else -1
+                self.velocity.x = self.max_boost_speed * direction
             else:
                 self.is_boosting = False
 
-
     def jump(self):
-        """Ability for a character to jump."""
-        if self.pos.y + self.height >= SCREEN_HEIGHT:
+        """
+        Initiates a jump if the character is currently grounded.
+        """
+        if self.get_bottom() >= SCREEN_HEIGHT:
             self.velocity.y = -self.jump_force
