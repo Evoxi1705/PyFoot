@@ -67,7 +67,7 @@ class DynamicObject(Entity):
         super().__init__(pos, height, width)
         self.velocity = velocity
 
-    def update(self, dt):
+    def update(self, dt, field):
         """
         Updates the object's position using Euler integration.
         
@@ -76,7 +76,7 @@ class DynamicObject(Entity):
         """
         self._apply_gravity(dt)
         self._apply_movement(dt)
-        self._handle_borders()
+        self._handle_borders(field)
 
     def _apply_movement(self, dt):
         self.pos.x += self.velocity.x * dt
@@ -88,11 +88,23 @@ class DynamicObject(Entity):
         """
         self.velocity.y += GRAVITY*dt
 
-    def _handle_borders(self): # The first _ means the method is meant to be local, not called outside the class
+    def _handle_borders(self, field): # The first _ means the method is meant to be local, not called outside the class
         """ Keeps the object inside the game world. """
-        if self.get_bottom() > SCREEN_HEIGHT:
-            self.pos.y = SCREEN_HEIGHT - self.height 
+        if self.get_bottom() > field.get_bottom():
+            self.pos.y = field.get_bottom() - self.height 
             self.velocity.y = 0
+
+        if self.get_top() < field.get_top():
+            self.pos.y = field.get_top()
+            self.velocity.y = 0
+
+        if self.get_right() > field.get_right():
+            self.pos.x = field.get_right() - self.width
+            self.velocity.x = 0
+
+        if self.get_left() < field.get_left():
+            self.pos.x = field.get_left()
+            self.velocity.x = 0
 
     @abstractmethod
     def draw(self, screen):
@@ -152,14 +164,14 @@ class Character(DynamicObject):
         self.is_boosting = False 
         self.boost_start = 0
 
-    def update(self, dt):
+    def update(self, dt, field):
         """
         Calculates physics and horizontal friction.
         
         Friction is applied via (FRICTION**(dt*60)) to ensure the character
         slows down identically regardless of frame rate.
         """
-        super().update(dt)
+        super().update(dt, field)
         self._apply_friction(dt)
     
     def _apply_friction(self, dt):
@@ -202,9 +214,9 @@ class Character(DynamicObject):
             else:
                 self.is_boosting = False
 
-    def jump(self):
+    def jump(self, field):
         """
         Initiates a jump if the character is currently grounded.
         """
-        if self.get_bottom() >= SCREEN_HEIGHT:
+        if self.get_bottom() >= field.get_bottom():
             self.velocity.y = -self.jump_force
