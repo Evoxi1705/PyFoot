@@ -220,3 +220,47 @@ class Character(DynamicObject):
         """
         if self.get_bottom() >= field.get_bottom():
             self.velocity.y = -self.jump_force
+
+class Player(Character):
+    """
+    Represents the human-controlled character.
+
+    Handles keyboard input and translates it into character actions.
+
+    Attributes:
+        controls (dict): Mapping of actions to pygame key constants.
+    """
+
+    def __init__(self, 
+                 pos, 
+                 velocity, 
+                 height, 
+                 width,
+                 controls=PLAYER1_CONTROLS,
+                 jump_force=JUMP_FORCE, 
+                 boost_force=BOOST_FORCE, 
+                 boost_time=BOOST_TIME, 
+                 max_speed=MAX_SPEED, 
+                 max_boost_speed=MAX_BOOST_SPEED, 
+                 cooldown_time=COOLDOWN):
+        
+        self.controls = controls
+        super().__init__(pos, velocity, height, width, jump_force, boost_force, boost_time, max_speed, max_boost_speed, cooldown_time)
+
+    def _handle_inputs(self, dt):
+        keys = pygame.key.get_pressed()
+
+        if keys[self.controls["left"]]:
+            self.move_left(dt)
+
+        if keys[self.controls["right"]]:
+            self.move_right(dt)
+
+        if keys[self.controls["jump"]]:
+            self.jump()
+
+        if keys[self.controls["boost"]]:
+            self.boost()
+
+    def draw(self):
+        pass
