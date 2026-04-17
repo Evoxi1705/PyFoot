@@ -237,15 +237,10 @@ class Player(Character):
                  height, 
                  width,
                  controls=PLAYER1_CONTROLS,
-                 jump_force=JUMP_FORCE, 
-                 boost_force=BOOST_FORCE, 
-                 boost_time=BOOST_TIME, 
-                 max_speed=MAX_SPEED, 
-                 max_boost_speed=MAX_BOOST_SPEED, 
-                 cooldown_time=COOLDOWN):
+                 **kwargs):
         
         self.controls = controls
-        super().__init__(pos, velocity, height, width, jump_force, boost_force, boost_time, max_speed, max_boost_speed, cooldown_time)
+        super().__init__(pos, velocity, height, width, **kwargs)
 
     def _handle_inputs(self, dt):
         keys = pygame.key.get_pressed()
@@ -263,4 +258,91 @@ class Player(Character):
             self.boost()
 
     def draw(self):
+        pass
+
+class Bot(Character):
+    """
+    Represents the AI-controlled character.
+
+    Makes decisions based on the game state each frame.
+
+    Attributes:
+        player (Player): Reference to the human-controlled character.
+        ball (Ball): Reference to the ball object.
+    """
+    def __init__(self, 
+                 pos: Vector2, 
+                 velocity: Vector2,
+                 height, 
+                 width, 
+                 player,
+                 ball,
+                 **kwargs):
+
+        self.player = player
+        self.ball = ball
+        super().__init__(pos, velocity, height, width, **kwargs)
+
+    def draw(self):
+        pass
+
+    @abstractmethod
+    def _handle_action(self, dt):
+        pass
+
+class EasyBot(Bot):
+    
+    def __init__(self, 
+                 pos, 
+                 velocity, 
+                 height, 
+                 width, 
+                 player, 
+                 ball, 
+                 **kwargs):
+        
+        super().__init__(pos, velocity, height, width, player, ball, **kwargs)
+
+    def draw(self):
+        pass
+
+    def _handle_action(self, dt):
+        pass
+
+class MediumBot(Bot):
+    
+    def __init__(self, 
+                 pos, 
+                 velocity, 
+                 height, 
+                 width, 
+                 player, 
+                 ball, 
+                 **kwargs):
+        
+        super().__init__(pos, velocity, height, width, player, ball, **kwargs)
+
+    def draw(self):
+        pass
+
+    def _handle_action(self, dt):
+        pass
+
+class HardBot(Bot):
+    
+    def __init__(self, 
+                 pos, 
+                 velocity, 
+                 height, 
+                 width, 
+                 player, 
+                 ball, 
+                 **kwargs):
+        
+        super().__init__(pos, velocity, height, width, player, ball, **kwargs)
+
+    def draw(self):
+        pass
+
+    def _handle_action(self, dt):
         pass
