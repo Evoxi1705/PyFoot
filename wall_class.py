@@ -1,5 +1,12 @@
 import pygame
 
+WIDTH,HEIGHT = 1000,800
+BW = 100 #block width
+BH = 300 # block height
+r = 20 #radius
+TH = 50 #triangle height = triangle width
+
+
 class Field:
     """
     Class for making the field
@@ -29,6 +36,7 @@ class Field:
             border_bottom_left_radius=self.r_bot_left,
             border_bottom_right_radius=self.r_bot_right)
 
+
 class Triangle:
     
     """
@@ -49,20 +57,19 @@ class Triangle:
     def draw(self, screen):
         pygame.draw.polygon(screen, self.color, self.points)
 
-#to actually draw the field (hypotetical at the moment, maybe use variables) :
 
-triangle_top_left = Triangle([(100,0),(150,0),(100,150)], (0,0,0))
-triangle_bottom_left = Triangle([...],(0,0,0))
-triangle_top_right = Triangle([...],(0,0,0))
-triangle_bottom_right = Triangle([...],(0,0,0))
+triangle_top_left = Triangle([(BW,0),(BW + TH,0),(BW, TH)], color=(0,0,0))
+triangle_bottom_left = Triangle([(BW,HEIGHT), (BW, HEIGHT - TH), (BW + TH, HEIGHT)],color=(0,0,0))
+triangle_top_right = Triangle([(WIDTH - BW,0),(WIDTH - BW, TH),(WIDTH - BW - TH,0)],color=(0,0,0))
+triangle_bottom_right = Triangle([(WIDTH - BW, HEIGHT),(WIDTH - BW-TH, HEIGHT),(WIDTH - BW, HEIGHT - TH)],color=(0,0,0))
+"""
+we can do the exact same thing if we want triangle in the goals
+"""
 
-block_top_left     = Field(0,  0,  100, 300, color=(0,0,0), r_bot_right=20)
-block_bottom_left  = Field(0,  500, 100, 300, color=(0,0,0), r_top_right=20)
-block_top_right    = Field(900, 0,  100, 300, color=(0,0,0), r_bot_left=20)
-block_bottom_right = Field(900, 500 , 100, 300, color=(0,0,0), r_top_left=20)
-
-
-    
+block_top_left     = Field(0,  0,  BW, BH, color=(0,0,0), r_bot_right=r)
+block_bottom_left  = Field(0,  HEIGHT - BH, BW, BH, color=(0,0,0), r_top_right=r)
+block_top_right    = Field(WIDTH - BW, 0,  BW, BH, color=(0,0,0), r_bot_left=r)
+block_bottom_right = Field(WIDTH - BW, HEIGHT - BH , BW, BH, color=(0,0,0), r_top_left=r)
 
 """
 in game loop:
