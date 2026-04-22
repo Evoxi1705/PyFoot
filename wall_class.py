@@ -57,6 +57,11 @@ class Triangle:
     def draw_triangle(self, screen):
         pygame.draw.polygon(screen, self.color, self.points)
         
+
+
+
+
+
 triangle_top_left = Triangle([(BW,0),(BW + TH,0),(BW, TH)], color=(0,0,0))
 triangle_bottom_left = Triangle([(BW,HEIGHT), (BW, HEIGHT - TH), (BW + TH, HEIGHT)],color=(0,0,0))
 triangle_top_right = Triangle([(WIDTH - BW,0),(WIDTH - BW, TH),(WIDTH - BW - TH,0)],color=(0,0,0))
