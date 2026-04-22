@@ -2,7 +2,7 @@ from base_classes import *
 from wall_class import *
 import pygame 
 
-walls = [field, block_top_left, block_bottom_left, block_top_right, block_bottom_right]
+walls = [block_top_left, block_bottom_left, block_top_right, block_bottom_right]
 
 class Ball(DynamicObject):
     
@@ -27,29 +27,44 @@ class Ball(DynamicObject):
     def draw(self,screen):
         pygame.draw.circle(screen, (0,255,0), (self.pos.x, self.pos.y), self.radius)
         
+    def bounce_screen(self, width, height):
+        if self.pos.x - self.radius <= 0:
+            self.velocity.x *= -self.bounce_factor
+
+        if self.pos.x + self.radius >= width:
+            self.velocity.x *= -self.bounce_factor
+
+        if self.pos.y - self.radius <= 0:
+            self.velocity.y *= -self.bounce_factor
+
+        if self.pos.y + self.radius >= height:
+            self.velocity.y *= -self.bounce_factor 
+    
     def bounce(self, walls):
-        
-        for wall in walls:   #it goes over all walls
+        for wall in walls:
             
-            """
-            here is an other option possible, we can make rectangle
-            around the ball and then collision checken with colliderect
-            """
-            closest_x = 
+            rect = wall.rect 
+            
+            #van welke punt is de bal het dichtste ?
+            
+
+            dx = abs(self.pos.x - closest_x)
+            dy = abs(self.pos.y - closest_y)
+            
+            if (dx**2)*0.5 < (self.radius**2)*0.5:
+                self.velocity.x *= -self.bounce_factor
+                
+            if (dx**2)*0.5 < (self.radius**2)*0.5:
+                self.velocity.y *= -self.bounce_factor
+                
+                
+    def bounce_triangle
         
+        
+
         
                 
-"""               
-not using elif because otherwise it would stop after one True
-wall.rect.bottom (and the other ones) is an automatic pygame function, 
-it works because i made an pygame.rect
 
-so here i define walls, that contains the attributes and dimensions of 
-my field. 
-
-
-
-"""
         
        
         
