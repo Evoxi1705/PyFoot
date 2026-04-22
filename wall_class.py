@@ -29,7 +29,7 @@ class Field:
         self.r_bot_left = r_bot_left
         self.r_bot_right = r_bot_right
         
-    def draw(self,screen):
+    def draw_rect(self,screen):
         pygame.draw.rect(screen, self.color, self.rect, 
             border_top_left_radius=self.r_top_left,
             border_top_right_radius=self.r_top_right,
@@ -54,10 +54,9 @@ class Triangle:
         self.points = points
         self.color = color
         
-    def draw(self, screen):
+    def draw_triangle(self, screen):
         pygame.draw.polygon(screen, self.color, self.points)
-
-
+        
 triangle_top_left = Triangle([(BW,0),(BW + TH,0),(BW, TH)], color=(0,0,0))
 triangle_bottom_left = Triangle([(BW,HEIGHT), (BW, HEIGHT - TH), (BW + TH, HEIGHT)],color=(0,0,0))
 triangle_top_right = Triangle([(WIDTH - BW,0),(WIDTH - BW, TH),(WIDTH - BW - TH,0)],color=(0,0,0))
@@ -71,16 +70,7 @@ block_bottom_left  = Field(0,  HEIGHT - BH, BW, BH, color=(0,0,0), r_top_right=r
 block_top_right    = Field(WIDTH - BW, 0,  BW, BH, color=(0,0,0), r_bot_left=r)
 block_bottom_right = Field(WIDTH - BW, HEIGHT - BH , BW, BH, color=(0,0,0), r_top_left=r)
 
-"""
-in game loop:
 
-block_top_left.draw(screen)
-block_bottom_left.draw(screen)
-block_top_right.draw(screen)
-block_bottom_right.draw(screen)
-triangle_top_left.draw(screen)
-triangle_bottom_left.draw(screen)
-triangle_top_right.draw(screen)
-triangle_bottom_right.draw(screen)
 
-"""
+
+
