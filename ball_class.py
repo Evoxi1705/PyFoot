@@ -32,7 +32,7 @@ class Ball(DynamicObject):
          super().__init__(pos, velocity, radius*2, radius*2)
          self.radius = radius
          self.bounce_factor = bounce_factor
-         self.friction = 0.98
+         self.friction = FRICTION_BALL
 
     def update(self, dt, field):    
         super().update(dt, field)

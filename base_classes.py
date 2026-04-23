@@ -66,7 +66,7 @@ class DynamicObject(Entity):
     def __init__(self, pos: Vector2, velocity: Vector2, height, width):
         super().__init__(pos, height, width)
         self.velocity = velocity
-        self.friction = FRICTION
+        self.friction = FRICTION_CARS
 
     def update(self, dt, field):
         """
@@ -174,7 +174,7 @@ class Character(DynamicObject):
 
         self.is_boosting = False 
         self.boost_start = 0
-        self.friction = FRICTION
+        self.friction = FRICTION_CARS
         
     def move_left(self, dt):
         """Accelerates the character to the left up to max_speed"""
