@@ -1,25 +1,49 @@
 import pygame
-from constants import SCREEN_HEIGHT, SCREEN_WIDTH
+from base_classes import *
+from ball_class import *
+from constants import *
 
 pygame.init()
 clock = pygame.time.Clock()
 
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+# For testing purposes
+class TempField:
+    def get_top(self): return 0
+    def get_bottom(self): return SCREEN_HEIGHT
+    def get_left(self): return 0
+    def get_right(self): return SCREEN_WIDTH
+
+field = TempField()
+
 pygame.display.set_caption("Main Menu")
 
-# Create a Rect object: (x, y, width, height)
-player = pygame.Rect(50, 50, 64, 64)
+player = Player(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100)
+ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 15)
+easy_bot = EasyBot(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100, player, ball)
 velocity = 20
 
 run = True
 while run:
-    pygame.time.delay(30) 
-
     dt = clock.tick(60) / 1000  # dt is roughly 0.016 at 60fps
-    player.update(dt)
+    
+    window.fill((0,0,0))
+    easy_bot.draw(window)
+    easy_bot.update(dt, field)
+    easy_bot._handle_action(dt, field)
+
+    ball.draw(window)
+    ball.update(dt, field)
+
+    player.draw(window)    
+    player.update(dt, field)
+    player._handle_inputs(dt, field)
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
 
+    pygame.display.flip()
 pygame.quit()

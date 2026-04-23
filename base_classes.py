@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 import pygame
 from constants import *
 from class_tools import Vector2
-from ball_class import Ball
 
 """
 This code implements a frame-independent game object hierarchy. 
@@ -67,6 +66,7 @@ class DynamicObject(Entity):
     def __init__(self, pos: Vector2, velocity: Vector2, height, width):
         super().__init__(pos, height, width)
         self.velocity = velocity
+        self.friction = FRICTION
 
     def update(self, dt, field):
         """
@@ -78,10 +78,20 @@ class DynamicObject(Entity):
         self._apply_gravity(dt)
         self._apply_movement(dt)
         self._handle_borders(field)
+        self._apply_friction(dt, field)
 
     def _apply_movement(self, dt):
         self.pos.x += self.velocity.x * dt
         self.pos.y += self.velocity.y * dt
+
+    def _apply_friction(self, dt, field):
+        """Deccelarates the object based on friction with the surface. """
+        if self.get_bottom() >= field.get_bottom():
+            if abs(self.velocity.x) > 0.1: # Moving left means negative velocity so abs() and 0.1 is a treshold to make sure we stay above it
+                self.velocity.x *= (self.friction**(dt*60))
+                # dt*60 is to represent the velocity remaining after 1/60 of a second
+            else:
+                self.velocity.x = 0
 
     def _apply_gravity(self, dt):
         """
@@ -164,25 +174,8 @@ class Character(DynamicObject):
 
         self.is_boosting = False 
         self.boost_start = 0
-
-    def update(self, dt, field):
-        """
-        Calculates physics and horizontal friction.
+        self.friction = FRICTION
         
-        Friction is applied via (FRICTION**(dt*60)) to ensure the character
-        slows down identically regardless of frame rate.
-        """
-        super().update(dt, field)
-        self._apply_friction(dt)
-    
-    def _apply_friction(self, dt):
-        """Deccelarates the character based on friction with the surface. """
-        if abs(self.velocity.x) > 0.1: # Moving left means negative velocity so abs() and 0.1 is a treshold to make sure we stay above it
-            self.velocity.x *= (FRICTION**(dt*60))
-            # dt*60 is to represent the velocity remaining after 1/60 of a second
-        else:
-            self.velocity.x = 0
-
     def move_left(self, dt):
         """Accelerates the character to the left up to max_speed"""
         if self.velocity.x > -self.max_speed:
@@ -243,7 +236,7 @@ class Player(Character):
         self.controls = controls
         super().__init__(pos, velocity, height, width, **kwargs)
 
-    def _handle_inputs(self, dt):
+    def _handle_inputs(self, dt, field):
         keys = pygame.key.get_pressed()
 
         if keys[self.controls["left"]]:
@@ -253,13 +246,13 @@ class Player(Character):
             self.move_right(dt)
 
         if keys[self.controls["jump"]]:
-            self.jump()
+            self.jump(field)
 
         if keys[self.controls["boost"]]:
             self.boost()
 
-    def draw(self):
-        pass
+    def draw(self, screen):
+        pygame.draw.rect(screen, (0, 123, 60), (self.pos.x, self.pos.y, self.width, self.height))
 
 class Bot(Character):
     """
@@ -281,8 +274,7 @@ class Bot(Character):
                  **kwargs):
 
         self.player = player
-        self.ball = ball
-        self.ball: Ball = ball #Type hint
+        self.ball: "Ball" = ball
         super().__init__(pos, velocity, height, width, **kwargs)
 
     def draw(self):
@@ -309,10 +301,10 @@ class EasyBot(Bot):
         self.last_action = 0
         self.side = side
 
-    def draw(self):
-        pass
+    def draw(self, screen):
+        pygame.draw.rect(screen, (0, 123, 214), (self.pos.x, self.pos.y, self.width, self.height))
 
-    def _handle_action(self, dt):
+    def _handle_action(self, dt, field):
 
         now = pygame.time.get_ticks()
         
@@ -325,7 +317,7 @@ class EasyBot(Bot):
                 self.current_action = "left"
 
             if self.ball.pos.y < self.get_top():
-                self.jump()
+                self.jump(field)
 
         # Boost execution   
         if self.side*(self.ball.pos.x - SCREEN_WIDTH/2) < 0:

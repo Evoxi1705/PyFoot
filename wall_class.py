@@ -9,7 +9,7 @@ r = 20 #radius
 TH = 50 #triangle height = triangle width
 
 
-class Field:
+class Field(StaticObject):
     """
     Class for making the field
     
@@ -25,6 +25,7 @@ class Field:
     """
     def __init__(self,x,y,width,height, color, r_top_left=0, r_top_right=0, r_bot_left=0, r_bot_right=0):
         self.rect = pygame.Rect(x, y, width, height) #door dit te gebruiken zal de botsing functie in ball_class makkelijker zijn
+
 class Wall(StaticObject):
     def __init__(self, pos, width, height, color=WALL_COLOR):
         super().__init__(pos, height, width)
