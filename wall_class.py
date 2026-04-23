@@ -1,4 +1,6 @@
 import pygame
+from base_classes import *
+from constants import WALL_COLOR
 
 WIDTH,HEIGHT = 1000,800
 BW = 100 #block width
@@ -23,6 +25,9 @@ class Field:
     """
     def __init__(self,x,y,width,height, color, r_top_left=0, r_top_right=0, r_bot_left=0, r_bot_right=0):
         self.rect = pygame.Rect(x, y, width, height) #door dit te gebruiken zal de botsing functie in ball_class makkelijker zijn
+class Wall(StaticObject):
+    def __init__(self, pos, width, height, color=WALL_COLOR):
+        super().__init__(pos, height, width)
         self.color = color
         self.r_top_left = r_top_left 
         self.r_top_right = r_top_right
@@ -48,6 +53,8 @@ class Triangle:
                 als we point niet willen gebruiken kunnen we ook x,y,width,height
                 en dan  self.points = [(x, y + height),(x + width, y + height),(x + width//2, y)]
         color : color of the triangles
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.color, (self.pos.x, self.pos.y, self.width, self.height))
         
     """
     def __init__(self, points, color):

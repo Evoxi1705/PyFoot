@@ -23,6 +23,12 @@ class Ball(DynamicObject):
         super().__init__(pos, velocity)
         self.radius = radius
         self.bounce_factor = bounce_factor
+import pygame 
+
+class Ball(DynamicObject):
+    def __init__(self,pos,velocity, radius):
+        super().__init__(pos,velocity)
+        self.radius = radius
         
     def draw(self,screen):
         pygame.draw.circle(screen, (0,255,0), (self.pos.x, self.pos.y), self.radius)
