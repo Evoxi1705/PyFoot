@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import pygame
 from constants import *
 from class_tools import Vector2
+from ball_class import Ball
 
 """
 This code implements a frame-independent game object hierarchy. 
@@ -281,6 +282,7 @@ class Bot(Character):
 
         self.player = player
         self.ball = ball
+        self.ball: Ball = ball #Type hint
         super().__init__(pos, velocity, height, width, **kwargs)
 
     def draw(self):
@@ -298,16 +300,43 @@ class EasyBot(Bot):
                  height, 
                  width, 
                  player, 
-                 ball, 
+                 ball,
+                 side=BOT_SIDE,
                  **kwargs):
         
         super().__init__(pos, velocity, height, width, player, ball, **kwargs)
+        self.current_action = ""
+        self.last_action = 0
+        self.side = side
 
     def draw(self):
         pass
 
     def _handle_action(self, dt):
-        pass
+
+        now = pygame.time.get_ticks()
+        
+        # Decision making
+        if now - self.last_action > DELAY_EASYBOT:
+            self.last_action = pygame.time.get_ticks()
+            if self.pos.x < self.ball.pos.x:
+                self.current_action = "right"
+            elif self.pos.x > self.ball.pos.x:
+                self.current_action = "left"
+
+            if self.ball.pos.y < self.get_top():
+                self.jump()
+
+        # Boost execution   
+        if self.side*(self.ball.pos.x - SCREEN_WIDTH/2) < 0:
+            self.boost()
+
+        if self.current_action == "right":
+            self.move_right(dt)
+        elif self.current_action == "left":
+            self.move_left(dt)
+
+        
 
 class MediumBot(Bot):
     
