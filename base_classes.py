@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import pygame
+from game_loop import *
 from constants import *
 from class_tools import Vector2
 
@@ -300,6 +301,8 @@ class EasyBot(Bot):
         self.current_action = ""
         self.last_action = 0
         self.side = side
+        self.FSM = FSM(self)
+        self.Defend = True
 
     def draw(self, screen):
         pygame.draw.rect(screen, (0, 123, 214), (self.pos.x, self.pos.y, self.width, self.height))
@@ -350,6 +353,7 @@ class MediumBot(Bot):
         pass
 
 class HardBot(Bot):
+
     
     def __init__(self, 
                  pos, 
@@ -367,3 +371,55 @@ class HardBot(Bot):
 
     def _handle_action(self, dt):
         pass
+
+import pygame
+
+##=========================================
+class State:
+    pass
+
+class Defend(State):
+    def Execute(self):
+        pass
+
+class Attack(State):
+    def Execute(self):
+        pass
+##=========================================
+
+class Transitions(object):
+    def __init__(self, toState):
+        self.toState = toState
+
+    def Execute(self):
+        pass
+##=========================================
+
+class FSM(object):
+    def __init__(self, char):
+        self.char = char
+        self.states = {}
+        self.transitions = {}
+        self.curState = None
+        self.trans = None
+
+    def SetState(self, stateName):
+        self.curState = self.states[stateName]
+
+    def Transition(self, transName):
+        self.trans = self.transitions[transName]
+
+    def Execute(self):
+        if (self.trans):
+            self.trans.Execute()
+            self.SetState(self.trans.toState)
+            self.trans = None
+        self.curState.Execute()
+##=========================================
+
+if __name__ == "__main__":
+    bot = EasyBot()
+
+    bot.FSM.state["Defending"] = Defend()
+    bot.FSM.state["Attacking"] = Attack()
+    bot.FSM.transitions["toAttack"]
