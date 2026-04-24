@@ -2,6 +2,7 @@ import pygame
 from base_classes import *
 from ball_class import *
 from constants import *
+from wall_class import *
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -24,6 +25,9 @@ ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 15)
 easy_bot = EasyBot(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100, player, ball)
 velocity = 20
 
+
+
+
 run = True
 while run:
     dt = clock.tick(60) / 1000  # dt is roughly 0.016 at 60fps
@@ -39,16 +43,16 @@ while run:
     player.draw(window)    
     player.update(dt, field)
     player._handle_inputs(dt, field)
+    
+    block_top_left.draw(window)
+    block_bottom_left.draw(window)
+    block_top_right.draw(window)
+    block_bottom_right.draw(window)
 
-    block_top_left.draw_rect(screen)
-    block_bottom_left.draw_rect(screen)
-    block_top_right.draw_rect(screen)
-    block_bottom_right.draw_rect(screen)
-
-    triangle_top_left.draw_triangle(screen)
-    triangle_bottom_left.draw_triangle(screen)
-    triangle_top_right.draw_triangle(screen)
-    triangle_bottom_right.draw_triangle(screen)
+    triangle_top_left.draw(window)
+    triangle_bottom_left.draw(window)
+    triangle_top_right.draw(window)
+    triangle_bottom_right.draw(window)
 
 
 
