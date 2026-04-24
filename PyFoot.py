@@ -40,6 +40,17 @@ while run:
     player.update(dt, field)
     player._handle_inputs(dt, field)
 
+    block_top_left.draw_rect(screen)
+    block_bottom_left.draw_rect(screen)
+    block_top_right.draw_rect(screen)
+    block_bottom_right.draw_rect(screen)
+
+    triangle_top_left.draw_triangle(screen)
+    triangle_bottom_left.draw_triangle(screen)
+    triangle_top_right.draw_triangle(screen)
+    triangle_bottom_right.draw_triangle(screen)
+
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

@@ -23,12 +23,9 @@ class Field(StaticObject):
     corner to shape de field and to make goals
     
     """
-    def __init__(self,x,y,width,height, color, r_top_left=0, r_top_right=0, r_bot_left=0, r_bot_right=0):
-        self.rect = pygame.Rect(x, y, width, height) #door dit te gebruiken zal de botsing functie in ball_class makkelijker zijn
-
-class Wall(StaticObject):
-    def __init__(self, pos, width, height, color=WALL_COLOR):
+    def __init__(self, pos,width,height, color, r_top_left=0, r_top_right=0, r_bot_left=0, r_bot_right=0):
         super().__init__(pos, height, width)
+        self.rect = pygame.Rect(pos, width, height) #door dit te gebruiken zal de botsing functie in ball_class makkelijker zijn
         self.color = color
         self.r_top_left = r_top_left 
         self.r_top_right = r_top_right
@@ -68,8 +65,6 @@ class Triangle:
 
 
 
-
-
 triangle_top_left = Triangle([(BW,0),(BW + TH,0),(BW, TH)], color=(0,0,0))
 triangle_bottom_left = Triangle([(BW,HEIGHT), (BW, HEIGHT - TH), (BW + TH, HEIGHT)],color=(0,0,0))
 triangle_top_right = Triangle([(WIDTH - BW,0),(WIDTH - BW, TH),(WIDTH - BW - TH,0)],color=(0,0,0))
@@ -84,6 +79,14 @@ block_top_right    = Field(WIDTH - BW, 0,  BW, BH, color=(0,0,0), r_bot_left=r)
 block_bottom_right = Field(WIDTH - BW, HEIGHT - BH , BW, BH, color=(0,0,0), r_top_left=r)
 
 
+block_top_left.draw_rect(screen)
+block_bottom_left.draw_rect(screen)
+block_top_right.draw_rect(screen)
+block_bottom_right.draw_rect(screen)
 
+triangle_top_left.draw_triangle(screen)
+triangle_bottom_left.draw_triangle(screen)
+triangle_top_right.draw_triangle(screen)
+triangle_bottom_right.draw_triangle(screen)
 
 
