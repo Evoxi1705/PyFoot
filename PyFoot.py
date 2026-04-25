@@ -1,9 +1,12 @@
 import pygame
+from base_classes import *
+from ball_class import *
+from constants import *
+from wall_class import *
 
 pygame.init()
+clock = pygame.time.Clock()
 
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 800
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # For testing purposes
@@ -13,22 +16,48 @@ class TempField:
     def get_left(self): return 0
     def get_right(self): return SCREEN_WIDTH
 
-#field = [block_top_left, block_bottom_left, block_top_right, block_bottom_right]
-
 field = TempField()
 
 pygame.display.set_caption("Main Menu")
 
-# Create a Rect object: (x, y, width, height)
-player = pygame.Rect(50, 50, 64, 64)
+player = Player(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100)
+ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 15)
+easy_bot = EasyBot(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100, player, ball)
 velocity = 20
+
+
 
 run = True
 while run:
-    pygame.time.delay(30) 
+    dt = clock.tick(60) / 1000  # dt is roughly 0.016 at 60fps
+    
+    window.fill((0,0,0))
+    easy_bot.draw(window)
+    easy_bot.update(dt, field)
+    easy_bot._handle_action(dt, field)
+
+    ball.draw(window)
+    ball.update(dt, field)
+
+    player.draw(window)    
+    player.update(dt, field)
+    player._handle_inputs(dt, field)
+    
+    block_top_left.draw(window)
+    block_bottom_left.draw(window)
+    block_top_right.draw(window)
+    block_bottom_right.draw(window)
+
+    triangle_top_left.draw(window)
+    triangle_bottom_left.draw(window)
+    triangle_top_right.draw(window)
+    triangle_bottom_right.draw(window)
+
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
 
+    pygame.display.flip()
 pygame.quit()
