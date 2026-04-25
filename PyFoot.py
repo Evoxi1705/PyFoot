@@ -16,7 +16,7 @@ class TempField:
     def get_left(self): return 0
     def get_right(self): return SCREEN_WIDTH
 
-field = TempField()
+#field = TempField()
 
 pygame.display.set_caption("Main Menu")
 
@@ -47,6 +47,8 @@ while run:
     block_bottom_left.draw(window)
     block_top_right.draw(window)
     block_bottom_right.draw(window)
+    block_top.draw(window)
+    block_bottom.draw(window)
 
     triangle_top_left.draw(window)
     triangle_bottom_left.draw(window)

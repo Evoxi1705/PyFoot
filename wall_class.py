@@ -84,6 +84,9 @@ block_top_left = Rectangle(Vector2(0,  0),  BW, BH, color=WALL_COLOR)
 block_bottom_left = Rectangle(Vector2(0,  HEIGHT - BH), BW, BH, color=WALL_COLOR)
 block_top_right = Rectangle(Vector2(WIDTH - BW, 0),  BW, BH, color=WALL_COLOR)
 block_bottom_right = Rectangle(Vector2(WIDTH - BW, HEIGHT - BH), BW, BH, color=WALL_COLOR)
+block_top = Rectangle(Vector2(0,-10),WIDTH,10,color=WALL_COLOR)
+block_bottom = Rectangle(Vector2(0, HEIGHT),WIDTH, 10, color=WALL_COLOR)
+
 
 
 
