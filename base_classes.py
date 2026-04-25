@@ -104,20 +104,19 @@ class DynamicObject(Entity):
         """ Keeps the object inside the game world. """
         if self.get_bottom() > field.get_bottom():
             self.pos.y = field.get_bottom() - self.height 
-            self.velocity.y = 0
+            self.velocity.y = -abs(self.velocity.y) 
 
         if self.get_top() < field.get_top():
             self.pos.y = field.get_top()
-            self.velocity.y = 0
+            self.velocity.y = abs(self.velocity.y) 
 
         if self.get_right() > field.get_right():
             self.pos.x = field.get_right() - self.width
-            self.velocity.x = 0
+            self.velocity.x = -abs(self.velocity.x) 
 
         if self.get_left() < field.get_left():
             self.pos.x = field.get_left()
-            self.velocity.x = 0
-
+            self.velocity.x = abs(self.velocity.x) 
     @abstractmethod
     def draw(self, screen):
         """Drawing the objects."""
