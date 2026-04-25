@@ -1,9 +1,9 @@
 from base_classes import *
 from constants import *
-#from wall_class import *
+from wall_class import *
 import pygame 
 
-#walls = [block_top_left, block_bottom_left, block_top_right, block_bottom_right]
+field = [block_top_left, block_bottom_left, block_top_right, block_bottom_right, block_top, block_bottom]
 """
 Class defining the ball and the bouncing of it
 
@@ -25,37 +25,58 @@ class Ball(DynamicObject):
     
     def update(self, dt, field):    
         super().update(dt, field)
-        #self.bounce_screen() # So that it gets updated every frame and it is not needed to be called in the main
+        #self.bounce(field) # So that it gets updated every frame and it is not needed to be called in the main
         
     def draw(self, screen):
         pygame.draw.circle(screen, (0,255,0), (self.pos.x + self.radius, self.pos.y + self.radius), self.radius)
-             
-    """
-    def bounce(self, walls):
-         for wall in walls:
+         
+    """ 
+    def bounce(self, field):
+        for wall in field:
+ 
             
-             rect = wall.rect 
+            rect = wall.rect
             
-             #van welke punt is de bal het dichtste ?
+            # Dichtstbijzijnde punt op de rechthoek t.o.v. het middelpunt van de bal
+            cx = self.pos.x + self.radius
+            cy = self.pos.y + self.radius
             
-
-             dx = abs(self.pos.x - closest_x)
-             dy = abs(self.pos.y - closest_y)
+            closest_x = max(rect.left, min(cx, rect.right))
+            closest_y = max(rect.top, min(cy, rect.bottom))
             
-             if (dx**2)*0.5 < (self.radius**2)*0.5:
-                 self.velocity.x *= -self.bounce_factor
-                
-             if (dx**2)*0.5 < (self.radius**2)*0.5:
-                 self.velocity.y *= -self.bounce_factor
-                
-    """       
+            dx = cx - closest_x
+            dy = cy - closest_y
+            
+            dist = (dx**2 + dy**2) ** 0.5
+            
+            if dist == 0 or dist > self.radius:
+                continue
+            
+            # Hoeveel overlappen ze?
+            overlap = self.radius - dist
+            
+            # Normaliseer de richting
+            nx = dx / dist
+            ny = dy / dist
+            
+            # Duw de bal terug zodat hij niet meer overlapt
+            self.pos.x += nx * overlap
+            self.pos.y += ny * overlap
+            
+            # Reflecteer de velocity
+            dot = self.velocity.x * nx + self.velocity.y * ny
+            self.velocity.x = (self.velocity.x - 2 * dot * nx) * self.bounce_factor
+            self.velocity.y = (self.velocity.y - 2 * dot * ny) * self.bounce_factor   
+    
+    
     def bounce_triangle():
         pass
         
         
-
+"""
         
                 
+              
 
         
        
