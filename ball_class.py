@@ -29,7 +29,27 @@ class Ball(DynamicObject):
         
     def draw(self, screen):
         pygame.draw.circle(screen, (0,255,0), (self.pos.x + self.radius, self.pos.y + self.radius), self.radius)
-         
+        
+    def _handle_borders(self, field): # The first _ means the method is meant to be local, not called outside the class
+        """ Keeps the object inside the game world. """
+        if self.get_bottom() > field.get_bottom():
+            self.pos.y = field.get_bottom() - self.height 
+            self.velocity.y = -abs(self.velocity.y) + self.bounce_factor
+
+        if self.get_top() < field.get_top():
+            self.pos.y = field.get_top()
+            self.velocity.y = abs(self.velocity.y) + self.bounce_factor
+
+        if self.get_right() > field.get_right():
+            self.pos.x = field.get_right() - self.width
+            self.velocity.x = -abs(self.velocity.x) + self.bounce_factor
+
+        if self.get_left() < field.get_left():
+            self.pos.x = field.get_left()
+            self.velocity.x = abs(self.velocity.x) + self.bounce_factor
+        
+
+     
     """ 
     def bounce(self, field):
         for wall in field:

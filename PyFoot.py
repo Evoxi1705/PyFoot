@@ -38,10 +38,12 @@ while run:
     ball.draw(window)
     ball.update(dt, field)
     #ball.bounce(field)
+    ball._handle_borders(field)
 
     player.draw(window)    
     player.update(dt, field)
     player._handle_inputs(dt, field)
+
     
     block_top_left.draw(window)
     block_bottom_left.draw(window)
