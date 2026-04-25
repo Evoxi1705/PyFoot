@@ -101,22 +101,22 @@ class DynamicObject(Entity):
         self.velocity.y += GRAVITY*dt
 
     def _handle_borders(self, field): # The first _ means the method is meant to be local, not called outside the class
-            #Keeps the object inside the game world.
-            if self.get_bottom() > field.get_bottom():
-                self.pos.y = field.get_bottom() - self.height 
-                self.velocity.y = -abs(self.velocity.y) 
-    
-            if self.get_top() < field.get_top():
-                self.pos.y = field.get_top()
-                self.velocity.y = abs(self.velocity.y)
-    
-            if self.get_right() > field.get_right():
-                self.pos.x = field.get_right() - self.width
-                self.velocity.x = -abs(self.velocity.x)
-    
-            if self.get_left() < field.get_left():
-                self.pos.x = field.get_left()
-                self.velocity.x = abs(self.velocity.x)  
+        """ Keeps the object inside the game world. """
+        if self.get_bottom() > field.get_bottom():
+            self.pos.y = field.get_bottom() - self.height 
+            self.velocity.y = 0
+
+        if self.get_top() < field.get_top():
+            self.pos.y = field.get_top()
+            self.velocity.y = 0
+
+        if self.get_right() > field.get_right():
+            self.pos.x = field.get_right() - self.width
+            self.velocity.x = 0
+
+        if self.get_left() < field.get_left():
+            self.pos.x = field.get_left()
+            self.velocity.x = 0
 
     @abstractmethod
     def draw(self, screen):
@@ -281,8 +281,6 @@ class Bot(Character):
     def draw(self):
         pass
 
-          
-    
     @abstractmethod
     def _handle_action(self, dt):
         pass
@@ -333,8 +331,8 @@ class EasyBot(Bot):
         elif self.current_action == "left":
             self.move_left(dt)
 
+        
 """
-
 class MediumBot(Bot):
     
     def __init__(self, 
@@ -425,5 +423,4 @@ if __name__ == "__main__":
     bot.FSM.state["Defending"] = Defend()
     bot.FSM.state["Attacking"] = Attack()
     bot.FSM.transitions["toAttack"]
-    
-"""
+    """

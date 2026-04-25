@@ -16,7 +16,7 @@ class TempField:
     def get_left(self): return 0
     def get_right(self): return SCREEN_WIDTH
 
-#field = TempField()
+field = TempField()
 
 pygame.display.set_caption("Main Menu")
 

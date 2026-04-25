@@ -25,16 +25,15 @@ class Ball(DynamicObject):
     
     def update(self, dt, field):    
         super().update(dt, field)
-        self.bounce(field) # So that it gets updated every frame and it is not needed to be called in the main
+        #self.bounce(field) # So that it gets updated every frame and it is not needed to be called in the main
         
     def draw(self, screen):
         pygame.draw.circle(screen, (0,255,0), (self.pos.x + self.radius, self.pos.y + self.radius), self.radius)
          
-        
+    """  
     def bounce(self, field):
         for wall in field:
-            if not self.collides_with(field):
-                continue
+ 
             
             rect = wall.rect
             
@@ -77,7 +76,7 @@ class Ball(DynamicObject):
 
         
                 
-                
+            """    
 
         
        
