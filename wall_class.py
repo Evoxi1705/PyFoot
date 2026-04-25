@@ -2,11 +2,6 @@ import pygame
 from base_classes import *
 from constants import *
 
-WIDTH,HEIGHT = 1500,750
-BW = 100 #block width
-BH = 300 # block height
-r = 20 #radius
-TH = 50 #triangle height = triangle width
 
 
 class Rectangle(StaticObject):
@@ -72,20 +67,20 @@ class Triangle(StaticObject):
 
 
 
-triangle_bottom_left  = Triangle(Vector2(BW, HEIGHT - TH), TH, "bottom-left")
+triangle_bottom_left  = Triangle(Vector2(BW, SCREEN_HEIGHT - TH), TH, "bottom-left")
 triangle_top_left     = Triangle(Vector2(BW, 0), TH, "top-left")
-triangle_bottom_right = Triangle(Vector2(WIDTH - BW - TH, HEIGHT - TH), TH, "bottom-right")
-triangle_top_right    = Triangle(Vector2(WIDTH - BW - TH, 0), TH, "top-right")
+triangle_bottom_right = Triangle(Vector2(SCREEN_WIDTH - BW - TH, SCREEN_HEIGHT - TH), TH, "bottom-right")
+triangle_top_right    = Triangle(Vector2(SCREEN_WIDTH - BW - TH, 0), TH, "top-right")
 """
 we can do the exact same thing if we want triangle in the goals
 """
 
 block_top_left = Rectangle(Vector2(0,  0),  BW, BH, color=WALL_COLOR)
-block_bottom_left = Rectangle(Vector2(0,  HEIGHT - BH), BW, BH, color=WALL_COLOR)
-block_top_right = Rectangle(Vector2(WIDTH - BW, 0),  BW, BH, color=WALL_COLOR)
-block_bottom_right = Rectangle(Vector2(WIDTH - BW, HEIGHT - BH), BW, BH, color=WALL_COLOR)
-block_top = Rectangle(Vector2(0,-10),WIDTH,10,color=WALL_COLOR)
-block_bottom = Rectangle(Vector2(0, HEIGHT),WIDTH, 10, color=WALL_COLOR)
+block_bottom_left = Rectangle(Vector2(0,  SCREEN_HEIGHT - BH), BW, BH, color=WALL_COLOR)
+block_top_right = Rectangle(Vector2(SCREEN_WIDTH - BW, 0),  BW, BH, color=WALL_COLOR)
+block_bottom_right = Rectangle(Vector2(SCREEN_WIDTH - BW, SCREEN_HEIGHT - BH), BW, BH, color=WALL_COLOR)
+block_top = Rectangle(Vector2(0,-10),SCREEN_WIDTH,10,color=WALL_COLOR)
+block_bottom = Rectangle(Vector2(0, SCREEN_HEIGHT),SCREEN_WIDTH, 10, color=WALL_COLOR)
 
 
 
