@@ -9,7 +9,6 @@ clock = pygame.time.Clock()
 
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-# For testing purposes
 class TempField:
     def get_top(self): return 0
     def get_bottom(self): return SCREEN_HEIGHT
@@ -38,6 +37,7 @@ while run:
 
     ball.draw(window)
     ball.update(dt, field)
+    #ball.bounce(field)
 
     player.draw(window)    
     player.update(dt, field)

@@ -30,7 +30,7 @@ class Ball(DynamicObject):
     def draw(self, screen):
         pygame.draw.circle(screen, (0,255,0), (self.pos.x + self.radius, self.pos.y + self.radius), self.radius)
          
-    """  
+    """ 
     def bounce(self, field):
         for wall in field:
  
@@ -73,10 +73,10 @@ class Ball(DynamicObject):
         pass
         
         
-
+"""
         
                 
-            """    
+              
 
         
        

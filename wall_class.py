@@ -29,8 +29,8 @@ class Rectangle(StaticObject):
         self.color = color
         
         
-    def draw(self,screen):
-        pygame.draw.rect(screen, self.color, self.rect)
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.color, (self.pos.x, self.pos.y, self.width, self.height))
 
 
 
