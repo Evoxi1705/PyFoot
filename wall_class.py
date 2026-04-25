@@ -11,8 +11,7 @@ class Rectangle(StaticObject):
     Attributes:
         x,y : position of the top left corner of each rectangle
         width, height : dimension of the rectangle
-        r_top_left, r_top_right, r_bot_left, r_bot_right : radius of each corner of the field, 
-               these have to be smaller than half the size of the height
+ 
                
     This class actually makes an rectangle, we can use it to make four block on each
     corner to shape de field and to make goals
