@@ -1,9 +1,9 @@
 from base_classes import *
 from constants import *
-#from wall_class import *
+from wall_class import *
 import pygame 
 
-#walls = [block_top_left, block_bottom_left, block_top_right, block_bottom_right]
+walls = [block_top_left, block_bottom_left, block_top_right, block_bottom_right, block_top, block_bottom]
 """
 Class defining the ball and the bouncing of it
 
@@ -25,30 +25,49 @@ class Ball(DynamicObject):
     
     def update(self, dt, field):    
         super().update(dt, field)
-        #self.bounce_screen() # So that it gets updated every frame and it is not needed to be called in the main
+        self._handle_borders(field) # So that it gets updated every frame and it is not needed to be called in the main
         
     def draw(self, screen):
         pygame.draw.circle(screen, (0,255,0), (self.pos.x + self.radius, self.pos.y + self.radius), self.radius)
-             
-    """
-    def bounce(self, walls):
-         for wall in walls:
-            
-             rect = wall.rect 
-            
-             #van welke punt is de bal het dichtste ?
-            
+        
+    def _handle_borders(self, field): 
+        """ Keeps the object inside the game world. """
+        if self.get_bottom() > field.get_bottom():
+            self.pos.y = field.get_bottom() - self.height 
+            self.velocity.y = -abs(self.velocity.y) * self.bounce_factor
 
-             dx = abs(self.pos.x - closest_x)
-             dy = abs(self.pos.y - closest_y)
+        if self.get_top() < field.get_top():
+            self.pos.y = field.get_top()
+            self.velocity.y = abs(self.velocity.y) * self.bounce_factor
+
+        if self.get_right() > field.get_right():
+            self.pos.x = field.get_right() - self.width
+            self.velocity.x = -abs(self.velocity.x) * self.bounce_factor
+
+        if self.get_left() < field.get_left():
+            self.pos.x = field.get_left()
+            self.velocity.x = abs(self.velocity.x) * self.bounce_factor
+    
+    def bounce_player(self, player):
+        
+        ball_pos = Vector2(self.pos.x, self.pos.y)
+        
+        closest_x = max(player.pos.x, min(ball_pos.x, player.pos.x + player.width))
+        closest_y = max(player.pos.y, min(ball_pos.y, player.pos.y + player.height))
+        
+        dx = abs(ball_pos.x - closest_x)
+        dy = abs(ball_pos.y - closest_y)
+        
+        if (dx**2)*0.5 < (self.radius**2)*0.5:
+            self.velocity.x = abs(self.velocity.x) * self.bounce_factor
+                
+        if (dy**2)*0.5 < (self.radius**2)*0.5:
+            self.velocity.y = abs(self.velocity.y) * self.bounce_factor
             
-             if (dx**2)*0.5 < (self.radius**2)*0.5:
-                 self.velocity.x *= -self.bounce_factor
-                
-             if (dx**2)*0.5 < (self.radius**2)*0.5:
-                 self.velocity.y *= -self.bounce_factor
-                
-    """       
+            
+        
+
+
     def bounce_triangle():
         pass
         
@@ -56,6 +75,7 @@ class Ball(DynamicObject):
 
         
                 
+              
 
         
        

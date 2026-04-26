@@ -1,12 +1,7 @@
 import pygame
 from base_classes import *
-from constants import WALL_COLOR
+from constants import *
 
-WIDTH,HEIGHT = 1000,800
-BW = 100 #block width
-BH = 300 # block height
-r = 20 #radius
-TH = 50 #triangle height = triangle width
 
 
 class Rectangle(StaticObject):
@@ -16,8 +11,7 @@ class Rectangle(StaticObject):
     Attributes:
         x,y : position of the top left corner of each rectangle
         width, height : dimension of the rectangle
-        r_top_left, r_top_right, r_bot_left, r_bot_right : radius of each corner of the field, 
-               these have to be smaller than half the size of the height
+ 
                
     This class actually makes an rectangle, we can use it to make four block on each
     corner to shape de field and to make goals
@@ -29,11 +23,11 @@ class Rectangle(StaticObject):
         self.color = color
         
         
-    def draw(self,screen):
-        pygame.draw.rect(screen, self.color, self.rect)
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.color, (self.pos.x, self.pos.y, self.width, self.height))
 
 
-class Triangle:
+
     
     """
     Class for making the little triangle that we used so we do,'t have 90° angles
@@ -48,28 +42,47 @@ class Triangle:
         pygame.draw.rect(screen, self.color, (self.pos.x, self.pos.y, self.width, self.height))
         
     """
-    def __init__(self, points, color):
-        self.points = points
+
+
+
+class Triangle(StaticObject):
+    def __init__(self, pos, size, corner, color=WALL_COLOR):
+        super().__init__(pos, size, size)
+        self.size = size
+        self.corner = corner
         self.color = color
-        
+
     def draw(self, screen):
-        pygame.draw.polygon(screen, self.color, self.points)
-        
+        x, y, s = self.pos.x, self.pos.y, self.size
+        if self.corner == "bottom-left":
+            pts = [(x, y), (x + s, y + s), (x, y + s)]
+        elif self.corner == "bottom-right":
+            pts = [(x + s, y), (x + s, y + s), (x, y + s)]
+        elif self.corner == "top-left":
+            pts = [(x, y), (x + s, y), (x, y + s)]
+        elif self.corner == "top-right":
+            pts = [(x, y), (x + s, y), (x + s, y + s)]
+        pygame.draw.polygon(screen, self.color, pts)
 
 
 
-triangle_top_left = Triangle([(BW,0),(BW + TH,0),(BW, TH)], color=WALL_COLOR)
-triangle_bottom_left = Triangle([(BW,HEIGHT), (BW, HEIGHT - TH), (BW + TH, HEIGHT)],color=WALL_COLOR)
-triangle_top_right = Triangle([(WIDTH - BW,0),(WIDTH - BW, TH),(WIDTH - BW - TH,0)],color=WALL_COLOR)
-triangle_bottom_right = Triangle([(WIDTH - BW, HEIGHT),(WIDTH - BW-TH, HEIGHT),(WIDTH - BW, HEIGHT - TH)],color=WALL_COLOR)
+triangle_bottom_left  = Triangle(Vector2(BW, SCREEN_HEIGHT - TH), TH, "bottom-left")
+triangle_top_left     = Triangle(Vector2(BW, 0), TH, "top-left")
+triangle_bottom_right = Triangle(Vector2(SCREEN_WIDTH - BW - TH, SCREEN_HEIGHT - TH), TH, "bottom-right")
+triangle_top_right    = Triangle(Vector2(SCREEN_WIDTH - BW - TH, 0), TH, "top-right")
 """
 we can do the exact same thing if we want triangle in the goals
 """
 
 block_top_left = Rectangle(Vector2(0,  0),  BW, BH, color=WALL_COLOR)
-block_bottom_left = Rectangle(Vector2(0,  HEIGHT - BH), BW, BH, color=WALL_COLOR)
-block_top_right = Rectangle(Vector2(WIDTH - BW, 0),  BW, BH, color=WALL_COLOR)
-block_bottom_right = Rectangle(Vector2(WIDTH - BW, HEIGHT - BH), BW, BH, color=WALL_COLOR)
+block_bottom_left = Rectangle(Vector2(0,  SCREEN_HEIGHT - BH), BW, BH, color=WALL_COLOR)
+block_top_right = Rectangle(Vector2(SCREEN_WIDTH - BW, 0),  BW, BH, color=WALL_COLOR)
+block_bottom_right = Rectangle(Vector2(SCREEN_WIDTH - BW, SCREEN_HEIGHT - BH), BW, BH, color=WALL_COLOR)
+block_top = Rectangle(Vector2(0,-10),SCREEN_WIDTH,10,color=WALL_COLOR)
+block_bottom = Rectangle(Vector2(0, SCREEN_HEIGHT),SCREEN_WIDTH, 10, color=WALL_COLOR)
+
+
+
 
 
 

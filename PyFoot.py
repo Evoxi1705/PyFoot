@@ -9,12 +9,11 @@ clock = pygame.time.Clock()
 
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-# For testing purposes
 class TempField:
     def get_top(self): return 0
     def get_bottom(self): return SCREEN_HEIGHT
-    def get_left(self): return 0
-    def get_right(self): return SCREEN_WIDTH
+    def get_left(self): return 0 + BW
+    def get_right(self): return SCREEN_WIDTH - BW
 
 field = TempField()
 
@@ -24,7 +23,6 @@ player = Player(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100)
 ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 15)
 easy_bot = EasyBot(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100, player, ball)
 velocity = 20
-
 
 
 
@@ -39,15 +37,20 @@ while run:
 
     ball.draw(window)
     ball.update(dt, field)
+    ball.bounce_player(player)
+
 
     player.draw(window)    
     player.update(dt, field)
     player._handle_inputs(dt, field)
+
     
     block_top_left.draw(window)
     block_bottom_left.draw(window)
     block_top_right.draw(window)
     block_bottom_right.draw(window)
+    block_top.draw(window)
+    block_bottom.draw(window)
 
     triangle_top_left.draw(window)
     triangle_bottom_left.draw(window)
