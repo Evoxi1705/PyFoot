@@ -4,6 +4,8 @@ from wall_class import *
 import pygame 
 
 walls = [block_top_left, block_bottom_left, block_top_right, block_bottom_right, block_top, block_bottom]
+triangles = [triangle_bottom_left, triangle_top_left, triangle_bottom_right, triangle_top_right]
+
 """
 Class defining the ball and the bouncing of it
 
@@ -25,7 +27,8 @@ class Ball(DynamicObject):
     
     def update(self, dt, field):    
         super().update(dt, field)
-        self._handle_borders(field) # So that it gets updated every frame and it is not needed to be called in the main
+        self._handle_borders(field)# So that it gets updated every frame and it is not needed to be called in the main
+        self._handle_corner_triangles(triangles)
         
     def draw(self, screen):
         pygame.draw.circle(screen, (0,255,0), (self.pos.x + self.radius, self.pos.y + self.radius), self.radius)
@@ -47,39 +50,76 @@ class Ball(DynamicObject):
         if self.get_left() < field.get_left():
             self.pos.x = field.get_left()
             self.velocity.x = abs(self.velocity.x) * self.bounce_factor
-    
-    def bounce_player(self, player, field):
-        
-        ball_pos = Vector2(self.pos.x, self.pos.y)
-        
-        closest_x = max(player.pos.x, min(ball_pos.x, player.pos.x + player.width))
-        closest_y = max(player.pos.y, min(ball_pos.y, player.pos.y + player.height))
-        
-        dx = abs(ball_pos.x - closest_x)
-        dy = abs(ball_pos.y - closest_y)
-        
-        if (dy**2)*0.5 < (self.radius**2)*0.5:
-            self.pos.y = field.get_bottom() - self.height 
-            self.velocity.y = -abs(self.velocity.y) * self.bounce_factor
-                
-        if (dx**2)*0.5 < (self.radius**2)*0.5:
-            self.pos.x = field.get_right() - self.width
-            self.velocity.x = -abs(self.velocity.x) * self.bounce_factor
-            
-            
+
         
 
+     
+        
 
-    def bounce_triangle():
-        pass
+    def bounce_triangle(self, triangles):
+
+        cx = self.pos.x + self.radius
+        cy = self.pos.y + self.radius
         
+        for triangle in triangles:
+          x, y, s = triangle.pos.x, triangle.pos.y, triangle.size
+          
+          if triangle.corner == "bottom-left":
+              p1, p2 = (x, y), (x + s, y + s)
+     
+          elif triangle.corner == "bottom-right":
+              p1, p2 = (x + s, y), (x, y + s)
+              
+          elif triangle.corner == "top-left":
+              p1, p2 = (x + s, y), (x, y + s)
+              
+          elif triangle.corner == "top-right":
+              p1, p2 = (x, y), (x + s, y + s)
+              
+
+        edge_x = p2[0] - p1[0]
+        edge_y = p2[1] - p1[1]
         
+        edge_length_sqrt = edge_x**2 + edge_y**2
+        
+        t = ((cx - p1[0]) * edge_x + (cy - p1[1]) * edge_y) / edge_length_sqrt
+
+        # closest point on the edge to the ball center
+        closest_x = p1[0] + t * edge_x
+        closest_y = p1[1] + t * edge_y
+        
+        dx = cx - closest_x
+        dy = cy - closest_y
+        dist = (dx**2 + dy**2) ** 0.5 
+        
+        if dist <= self.radius and dist != 0:
+            
+
 
         
                 
               
 
-        
+            """
+            def bounce_player(self, player, field):
+                
+                ball_pos = Vector2(self.pos.x, self.pos.y)
+                
+                closest_x = max(player.pos.x, min(ball_pos.x, player.pos.x + player.width))
+                closest_y = max(player.pos.y, min(ball_pos.y, player.pos.y + player.height))
+                
+                dx = abs(ball_pos.x - closest_x)
+                dy = abs(ball_pos.y - closest_y)
+                
+                if (dy**2)*0.5 < (self.radius**2)*0.5:
+                    self.pos.y = field.get_bottom() - self.height 
+                    self.velocity.y = -abs(self.velocity.y) * self.bounce_factor
+                        
+                if (dx**2)*0.5 < (self.radius**2)*0.5:
+                    self.pos.x = field.get_right() - self.width
+                    self.velocity.x = -abs(self.velocity.x) * self.bounce_factor
+                    
+               """     
        
         
         
