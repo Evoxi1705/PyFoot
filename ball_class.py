@@ -25,10 +25,12 @@ class Ball(DynamicObject):
         self.bounce_factor = bounce_factor
         self.friction = FRICTION_BALL
     
-    def update(self, dt, field):    
-        super().update(dt, field)
-        self._handle_borders(field)# So that it gets updated every frame and it is not needed to be called in the main
-        self._handle_corner_triangles(triangles)
+    def update(self, dt, field, triangles):
+        self._apply_gravity(dt)      
+        self._apply_movement(dt)     
+        self._apply_friction(dt, field)
+        self._handle_borders(field)
+        self.bounce_triangle(triangles)
         
     def draw(self, screen):
         pygame.draw.circle(screen, (0,255,0), (self.pos.x + self.radius, self.pos.y + self.radius), self.radius)
@@ -50,10 +52,6 @@ class Ball(DynamicObject):
         if self.get_left() < field.get_left():
             self.pos.x = field.get_left()
             self.velocity.x = abs(self.velocity.x) * self.bounce_factor
-
-        
-
-     
         
 
     def bounce_triangle(self, triangles):
@@ -75,32 +73,50 @@ class Ball(DynamicObject):
               
           elif triangle.corner == "top-right":
               p1, p2 = (x, y), (x + s, y + s)
-              
+          
+          
+          edge_x = p2[0] - p1[0]
+          edge_y = p2[1] - p1[1]    
 
-        edge_x = p2[0] - p1[0]
-        edge_y = p2[1] - p1[1]
         
-        edge_length_sqrt = edge_x**2 + edge_y**2
         
-        t = ((cx - p1[0]) * edge_x + (cy - p1[1]) * edge_y) / edge_length_sqrt
+          edge_length_sqrt = edge_x**2 + edge_y**2
+        
+          t = ((cx - p1[0]) * edge_x + (cy - p1[1]) * edge_y) / edge_length_sqrt
+          t = max(0, min(1, t))
+        
+          closest_x = p1[0] + t * edge_x
+          closest_y = p1[1] + t * edge_y
+        
+          dx = cx - closest_x
+          dy = cy - closest_y
+          distance = (dx**2 + dy**2) ** 0.5 
+        
 
-        # closest point on the edge to the ball center
-        closest_x = p1[0] + t * edge_x
-        closest_y = p1[1] + t * edge_y
+        if distance <= self.radius and distance != 0:
+
+            normal_x = dx / distance
+            normal_y = dy / distance
+
+            overlap = self.radius - distance
+            self.pos.x += normal_x * overlap
+            self.pos.y += normal_y * overlap
+            
+            dot = self.velocity.x * normal_x + self.velocity.y * normal_y
+            self.velocity.x = (self.velocity.x - 2 * dot * normal_x) * self.bounce_factor
+            self.velocity.y = (self.velocity.y - 2 * dot * normal_y) * self.bounce_factor
         
-        dx = cx - closest_x
-        dy = cy - closest_y
-        dist = (dx**2 + dy**2) ** 0.5 
-        
-        if dist <= self.radius and dist != 0:
+
+                
+            
             
 
 
-        
+        """
                 
               
 
-            """
+            
             def bounce_player(self, player, field):
                 
                 ball_pos = Vector2(self.pos.x, self.pos.y)
