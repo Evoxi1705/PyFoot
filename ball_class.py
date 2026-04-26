@@ -48,7 +48,7 @@ class Ball(DynamicObject):
             self.pos.x = field.get_left()
             self.velocity.x = abs(self.velocity.x) * self.bounce_factor
     
-    def bounce_player(self, player):
+    def bounce_player(self, player, field):
         
         ball_pos = Vector2(self.pos.x, self.pos.y)
         
@@ -58,11 +58,13 @@ class Ball(DynamicObject):
         dx = abs(ball_pos.x - closest_x)
         dy = abs(ball_pos.y - closest_y)
         
-        if (dx**2)*0.5 < (self.radius**2)*0.5:
-            self.velocity.x = abs(self.velocity.x) * self.bounce_factor
-                
         if (dy**2)*0.5 < (self.radius**2)*0.5:
-            self.velocity.y = abs(self.velocity.y) * self.bounce_factor
+            self.pos.y = field.get_bottom() - self.height 
+            self.velocity.y = -abs(self.velocity.y) * self.bounce_factor
+                
+        if (dx**2)*0.5 < (self.radius**2)*0.5:
+            self.pos.x = field.get_right() - self.width
+            self.velocity.x = -abs(self.velocity.x) * self.bounce_factor
             
             
         
