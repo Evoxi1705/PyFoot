@@ -25,7 +25,26 @@ class Ball(DynamicObject):
     
     def update(self, dt, field):    
         super().update(dt, field)
+        self._handle_borders(field)
         #self.bounce(field) # So that it gets updated every frame and it is not needed to be called in the main
+
+    def _handle_borders(self, field):
+        """ Keeps the object inside the game world. """
+        if self.get_bottom() > field.get_bottom():
+            self.pos.y = field.get_bottom() - self.height 
+            self.velocity.y = 0
+
+        if self.get_top() < field.get_top():
+            self.pos.y = field.get_top()
+            self.velocity.y = 0
+
+        if self.get_right() > field.get_right():
+            self.pos.x = field.get_right() - self.width
+            self.velocity.x = 0
+
+        if self.get_left() < field.get_left():
+            self.pos.x = field.get_left()
+            self.velocity.x = 0
         
     def draw(self, screen):
         pygame.draw.circle(screen, (0,255,0), (self.pos.x + self.radius, self.pos.y + self.radius), self.radius)
