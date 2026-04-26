@@ -99,20 +99,25 @@ class DynamicObject(Entity):
         Applies downward acceleration to the vertical velocity.
         """
         self.velocity.y += GRAVITY*dt
-
+        
     def _handle_borders(self, field): # The first _ means the method is meant to be local, not called outside the class
         """ Keeps the object inside the game world. """
         if self.get_bottom() > field.get_bottom():
             self.pos.y = field.get_bottom() - self.height 
+            self.velocity.y = 0
 
         if self.get_top() < field.get_top():
             self.pos.y = field.get_top()
+            self.velocity.y = 0
 
         if self.get_right() > field.get_right():
             self.pos.x = field.get_right() - self.width
+            self.velocity.x = 0
 
         if self.get_left() < field.get_left():
             self.pos.x = field.get_left()
+            self.velocity.x = 0
+
 
     @abstractmethod
     def draw(self, screen):
@@ -177,7 +182,8 @@ class Character(DynamicObject):
         """Accelerates the character to the left up to max_speed"""
         if self.velocity.x > -self.max_speed:
             self.velocity.x -= ACCELERATION*dt
-
+            
+     
     def move_right(self, dt):
         """Accelerates the character to the right up to max_speed"""
         if self.velocity.x < self.max_speed:
@@ -247,6 +253,7 @@ class Player(Character):
 
         if keys[self.controls["boost"]]:
             self.boost()
+            
 
     def draw(self, screen):
         pygame.draw.rect(screen, (0, 123, 60), (self.pos.x, self.pos.y, self.width, self.height))

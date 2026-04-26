@@ -12,8 +12,8 @@ window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 class TempField:
     def get_top(self): return 0
     def get_bottom(self): return SCREEN_HEIGHT
-    def get_left(self): return 0
-    def get_right(self): return SCREEN_WIDTH
+    def get_left(self): return 0 + BW
+    def get_right(self): return SCREEN_WIDTH - BW
 
 field = TempField()
 
@@ -37,11 +37,13 @@ while run:
 
     ball.draw(window)
     ball.update(dt, field)
-    #ball.bounce(field)
+    ball.bounce_player(player)
+
 
     player.draw(window)    
     player.update(dt, field)
     player._handle_inputs(dt, field)
+
     
     block_top_left.draw(window)
     block_bottom_left.draw(window)
