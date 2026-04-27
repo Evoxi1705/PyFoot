@@ -3,6 +3,7 @@ from base_classes import *
 from ball_class import *
 from constants import *
 from wall_class import *
+from PyFoot_UI import show_menu
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -21,19 +22,24 @@ pygame.display.set_caption("Main Menu")
 
 player = Player(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100)
 ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 30)
-easy_bot = EasyBot(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100, player, ball)
-velocity = 20
 
+difficulty = show_menu()
 
+if difficulty == "Easy":
+    level = EasyBot(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100, player, ball)
+if difficulty == "Medium":
+    level = MediumBot(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100, player, ball)
+if difficulty == "Hard":
+    level = HardBot(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100, player, ball)
 
 run = True
 while run:
     dt = clock.tick(60) / 1000  # dt is roughly 0.016 at 60fps
     
     window.fill((0,0,0))
-    easy_bot.draw(window)
-    easy_bot.update(dt, field)
-    easy_bot._handle_action(dt, field)
+    level.draw(window)
+    level.update(dt, field)
+    level._handle_action(dt, field)
 
     ball.draw(window)
     ball.update(dt, field, triangles)
