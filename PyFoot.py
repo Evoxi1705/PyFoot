@@ -37,7 +37,7 @@ while run:
 
     ball.draw(window)
     ball.update(dt, field, triangles)
-    #ball.bounce_player(player, field)
+
 
 
     player.draw(window)    
