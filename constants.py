@@ -23,3 +23,7 @@ BOUNCE_FACTOR = 1
 BW = 115 #block width
 BH = 250 # block height
 TH = 50 #triangle height = triangle width
+
+#UI
+EASY_BUTTON_WIDTH = 100
+EASY_BUTTON_HEIGHT = 25
