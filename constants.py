@@ -16,7 +16,6 @@ ACCELERATION = 3000
 PLAYER1_CONTROLS = {"left": pygame.K_LEFT, "right": pygame.K_RIGHT, "jump": pygame.K_UP, "boost": pygame.K_DOWN}
 PLAYER2_CONTROLS = {"left": pygame.K_a, "right": pygame.K_d, "jump": pygame.K_s, "boost": pygame.K_w}
 DELAY_EASYBOT = 10
-BOT_SIDE = 1 # -1 for left, 1 for right
 BOUNCE_FACTOR = 1
 
 BW = 115 #block width
