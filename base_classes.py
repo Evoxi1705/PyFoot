@@ -408,8 +408,21 @@ class FSM:
     def SetState(self, stateName):
         self.current_state = self.states[stateName]
 
-    def change_state(self, new_state):
-        self.current_state = new_state
+    def Transition(self, transName):
+        self.trans = self.transitions[transName]
 
-    def execute(self, dt, field):
-         self.current_state.run(dt, field)
+    def Execute(self):
+        if (self.trans):
+            self.trans.Execute()
+            self.SetState(self.trans.toState)
+            self.trans = None
+        self.curState.Execute()
+##=========================================
+
+if __name__ == "__main__":
+    bot = EasyBot()
+
+    bot.FSM.state["Defending"] = Defend()
+    bot.FSM.state["Attacking"] = Attack()
+    bot.FSM.transitions["toAttack"]
+    """

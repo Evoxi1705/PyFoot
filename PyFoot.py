@@ -20,7 +20,7 @@ field = TempField()
 pygame.display.set_caption("Main Menu")
 
 player = Player(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100)
-ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 15)
+ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 30)
 easy_bot = EasyBot(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100, player, ball)
 velocity = 20
 
@@ -36,8 +36,8 @@ while run:
     easy_bot._handle_action(dt, field)
 
     ball.draw(window)
-    ball.update(dt, field)
-    ball.bounce_player(player)
+    ball.update(dt, field, triangles)
+    #ball.bounce_player(player, field)
 
 
     player.draw(window)    
