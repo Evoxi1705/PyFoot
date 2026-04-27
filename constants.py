@@ -19,7 +19,6 @@ DELAY_EASYBOT = 10
 BOT_SIDE = 1 # -1 for left, 1 for right
 BOUNCE_FACTOR = 1
 
-
 BW = 115 #block width
 BH = 250 # block height
 TH = 50 #triangle height = triangle width

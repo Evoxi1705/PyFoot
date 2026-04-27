@@ -20,7 +20,7 @@ field = TempField()
 pygame.display.set_caption("Main Menu")
 
 player = Player(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100)
-ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 30)
+ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 50)
 easy_bot = EasyBot(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100, player, ball)
 velocity = 20
 
@@ -39,14 +39,11 @@ while run:
     ball.draw(window)
     ball.update(dt, field, player, easy_bot, triangles)
 
-
-
     player.draw(window)    
     player.update(dt, field)
     player._handle_inputs(dt, field)
     player.bounce_triangle(triangles)
 
-    
     block_top_left.draw(window)
     block_bottom_left.draw(window)
     block_top_right.draw(window)
@@ -58,8 +55,6 @@ while run:
     triangle_bottom_left.draw(window)
     triangle_top_right.draw(window)
     triangle_bottom_right.draw(window)
-
-
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

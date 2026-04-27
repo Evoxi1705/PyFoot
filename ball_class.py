@@ -33,6 +33,7 @@ class Ball(DynamicObject):
         self.bounce_triangle(triangles)
         self.ball_player_collision(player)
         self.ball_player_collision(easy_bot)
+        self.goal(field)
         
     def draw(self, screen):
         pygame.draw.circle(screen, (0,255,0), (self.pos.x + self.radius, self.pos.y + self.radius), self.radius)
@@ -48,12 +49,14 @@ class Ball(DynamicObject):
             self.velocity.y = abs(self.velocity.y) * self.bounce_factor
 
         if self.get_right() > field.get_right():
-            self.pos.x = field.get_right() - self.width
-            self.velocity.x = -abs(self.velocity.x) * self.bounce_factor
+            if self.get_top() < BH or self.get_bottom() > SCREEN_HEIGHT - BH:
+                self.pos.x = field.get_right() - self.width
+                self.velocity.x = -abs(self.velocity.x) * self.bounce_factor
 
         if self.get_left() < field.get_left():
-            self.pos.x = field.get_left()
-            self.velocity.x = abs(self.velocity.x) * self.bounce_factor
+            if self.get_top() < BH or self.get_bottom() > SCREEN_HEIGHT - BH:
+                self.pos.x = field.get_left()
+                self.velocity.x = abs(self.velocity.x) * self.bounce_factor
         
 
     def bounce_triangle(self, triangles):
@@ -112,7 +115,7 @@ class Ball(DynamicObject):
         cy = self.pos.y + self.radius
         
         closest_x = max(player.pos.x, min(cx, player.pos.x + player.width))
-        closest_y = max(player.pos.y, min(cy, player.pos.y + player.width))
+        closest_y = max(player.pos.y, min(cy, player.pos.y + player.height))
         
         dx = cx - closest_x
         dy = cy - closest_y
@@ -130,6 +133,26 @@ class Ball(DynamicObject):
             dot = self.velocity.x * normal_x + self.velocity.y * normal_y
             self.velocity.x = (self.velocity.x - 2 * dot * normal_x) * self.bounce_factor
             self.velocity.y = (self.velocity.y - 2 * dot * normal_y) * self.bounce_factor
+            
+      
+    def goal(self, field):
+        
+        if self.pos.x + self.radius < BW:
+            self.pos.x = SCREEN_WIDTH/2 
+            self.pos.y = SCREEN_HEIGHT/2
+            self.velocity.x = 0
+            self.velocity.y = 0
+            print('GOAAAL for the bot')
+            
+        if self.pos.x + self.radius > SCREEN_WIDTH - BW:
+            self.pos.x = SCREEN_WIDTH/2 
+            self.pos.y = SCREEN_HEIGHT/2
+            self.velocity.x = 0
+            self.velocity.y = 0
+            print('GOAAAL for the player')
+
+                
+        
     
        
         
