@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 import pygame
-from game_loop import *
 from constants import *
 from class_tools import Vector2
 
