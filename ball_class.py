@@ -25,12 +25,15 @@ class Ball(DynamicObject):
         self.bounce_factor = bounce_factor
         self.friction = FRICTION_BALL
     
-    def update(self, dt, field, triangles):
+    def update(self, dt, field, player, easy_bot,triangles):
         self._apply_gravity(dt)      
         self._apply_movement(dt)     
         self._apply_friction(dt, field)
         self._handle_borders(field)
         self.bounce_triangle(triangles)
+        self.ball_player_collision(player)
+        self.ball_player_collision(easy_bot)
+        self.goal(field)
         
     def draw(self, screen):
         pygame.draw.circle(screen, (0,255,0), (self.pos.x + self.radius, self.pos.y + self.radius), self.radius)
@@ -46,12 +49,14 @@ class Ball(DynamicObject):
             self.velocity.y = abs(self.velocity.y) * self.bounce_factor
 
         if self.get_right() > field.get_right():
-            self.pos.x = field.get_right() - self.width
-            self.velocity.x = -abs(self.velocity.x) * self.bounce_factor
+            if self.get_top() < BH or self.get_bottom() > SCREEN_HEIGHT - BH:
+                self.pos.x = field.get_right() - self.width
+                self.velocity.x = -abs(self.velocity.x) * self.bounce_factor
 
         if self.get_left() < field.get_left():
-            self.pos.x = field.get_left()
-            self.velocity.x = abs(self.velocity.x) * self.bounce_factor
+            if self.get_top() < BH or self.get_bottom() > SCREEN_HEIGHT - BH:
+                self.pos.x = field.get_left()
+                self.velocity.x = abs(self.velocity.x) * self.bounce_factor
         
 
     def bounce_triangle(self, triangles):
@@ -64,40 +69,63 @@ class Ball(DynamicObject):
           
           if triangle.corner == "bottom-left":
               p1, p2 = (x, y), (x + s, y + s)
-     
           elif triangle.corner == "bottom-right":
               p1, p2 = (x + s, y), (x, y + s)
-              
           elif triangle.corner == "top-left":
               p1, p2 = (x + s, y), (x, y + s)
-              
           elif triangle.corner == "top-right":
               p1, p2 = (x, y), (x + s, y + s)
           
-          
           edge_x = p2[0] - p1[0]
           edge_y = p2[1] - p1[1]    
-
-        
         
           edge_length_sqrt = edge_x**2 + edge_y**2
         
           t = ((cx - p1[0]) * edge_x + (cy - p1[1]) * edge_y) / edge_length_sqrt
-          t = max(0, min(1, t))
+          if t < 0:
+              t = 0
+          if t > 1:
+              t = 1
         
           closest_x = p1[0] + t * edge_x
           closest_y = p1[1] + t * edge_y
         
           dx = cx - closest_x
           dy = cy - closest_y
-          distance = (dx**2 + dy**2) ** 0.5 
+          distance = (dx**2 + dy**2) ** 0.5
+          
+
+          if distance <= self.radius and distance != 0:
+              normal_x = dx / distance
+              normal_y = dy / distance
+    
+              overlap = self.radius - distance
+              self.pos.x += normal_x * overlap
+              self.pos.y += normal_y * overlap
+              
+              dot = self.velocity.x * normal_x + self.velocity.y * normal_y
+              self.velocity.x = (self.velocity.x - 2 * dot * normal_x) * self.bounce_factor
+              self.velocity.y = (self.velocity.y - 2 * dot * normal_y) * self.bounce_factor
+            
+            
+    
+    def ball_player_collision(self, player):
         
-
+        cx = self.pos.x + self.radius
+        cy = self.pos.y + self.radius
+        
+        closest_x = max(player.pos.x, min(cx, player.pos.x + player.width))
+        closest_y = max(player.pos.y, min(cy, player.pos.y + player.height))
+        
+        dx = cx - closest_x
+        dy = cy - closest_y
+        
+        distance = (dx**2 + dy**2) **0.5
+        
         if distance <= self.radius and distance != 0:
-
             normal_x = dx / distance
             normal_y = dy / distance
-
+  
             overlap = self.radius - distance
             self.pos.x += normal_x * overlap
             self.pos.y += normal_y * overlap
@@ -105,37 +133,27 @@ class Ball(DynamicObject):
             dot = self.velocity.x * normal_x + self.velocity.y * normal_y
             self.velocity.x = (self.velocity.x - 2 * dot * normal_x) * self.bounce_factor
             self.velocity.y = (self.velocity.y - 2 * dot * normal_y) * self.bounce_factor
+            
+      
+    def goal(self, field):
         
-
-                
+        if self.pos.x + self.radius < BW:
+            self.pos.x = SCREEN_WIDTH/2 
+            self.pos.y = SCREEN_HEIGHT/2
+            self.velocity.x = 0
+            self.velocity.y = 0
+            print('GOAAAL for the bot')
             
-            
+        if self.pos.x + self.radius > SCREEN_WIDTH - BW:
+            self.pos.x = SCREEN_WIDTH/2 
+            self.pos.y = SCREEN_HEIGHT/2
+            self.velocity.x = 0
+            self.velocity.y = 0
+            print('GOAAAL for the player')
 
-
-        """
                 
-              
-
-            
-            def bounce_player(self, player, field):
-                
-                ball_pos = Vector2(self.pos.x, self.pos.y)
-                
-                closest_x = max(player.pos.x, min(ball_pos.x, player.pos.x + player.width))
-                closest_y = max(player.pos.y, min(ball_pos.y, player.pos.y + player.height))
-                
-                dx = abs(ball_pos.x - closest_x)
-                dy = abs(ball_pos.y - closest_y)
-                
-                if (dy**2)*0.5 < (self.radius**2)*0.5:
-                    self.pos.y = field.get_bottom() - self.height 
-                    self.velocity.y = -abs(self.velocity.y) * self.bounce_factor
-                        
-                if (dx**2)*0.5 < (self.radius**2)*0.5:
-                    self.pos.x = field.get_right() - self.width
-                    self.velocity.x = -abs(self.velocity.x) * self.bounce_factor
-                    
-               """     
+        
+    
        
         
         

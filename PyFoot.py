@@ -42,15 +42,13 @@ while run:
     level._handle_action(dt, field)
 
     ball.draw(window)
-    ball.update(dt, field, triangles)
-    #ball.bounce_player(player, field)
-
+    ball.update(dt, field, player, level, triangles)
 
     player.draw(window)    
     player.update(dt, field)
     player._handle_inputs(dt, field)
+    player.bounce_triangle(triangles)
 
-    
     block_top_left.draw(window)
     block_bottom_left.draw(window)
     block_top_right.draw(window)
@@ -62,8 +60,6 @@ while run:
     triangle_bottom_left.draw(window)
     triangle_top_right.draw(window)
     triangle_bottom_right.draw(window)
-
-
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
