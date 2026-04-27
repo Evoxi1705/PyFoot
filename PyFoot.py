@@ -34,15 +34,17 @@ while run:
     easy_bot.draw(window)
     easy_bot.update(dt, field)
     easy_bot._handle_action(dt, field)
+    easy_bot.bounce_triangle(triangles)
 
     ball.draw(window)
-    ball.update(dt, field, triangles)
+    ball.update(dt, field, player, easy_bot, triangles)
 
 
 
     player.draw(window)    
     player.update(dt, field)
     player._handle_inputs(dt, field)
+    player.bounce_triangle(triangles)
 
     
     block_top_left.draw(window)

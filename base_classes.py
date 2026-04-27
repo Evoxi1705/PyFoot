@@ -217,6 +217,53 @@ class Character(DynamicObject):
         """
         if self.get_bottom() >= field.get_bottom():
             self.velocity.y = -self.jump_force
+            
+    def bounce_triangle(self, triangles):
+
+        corners = [(self.pos.x, self.pos.y),(self.pos.x, self.pos.y + self.height), (self.pos.x + self.width, self.pos.y), (self.pos.x + self.width, self.pos.y + self.height)]
+        
+        for triangle in triangles:
+          x, y, s = triangle.pos.x, triangle.pos.y, triangle.size
+        
+          if triangle.corner == "bottom-left":
+              p1, p2 = (x, y), (x + s, y + s)
+          elif triangle.corner == "bottom-right":
+              p1, p2 = (x + s, y), (x, y + s)
+          elif triangle.corner == "top-left":
+              p1, p2 = (x + s, y), (x, y + s)
+          elif triangle.corner == "top-right":
+              p1, p2 = (x, y), (x + s, y + s)
+          
+         
+          edge_x = p2[0] - p1[0]
+          edge_y = p2[1] - p1[1]    
+          edge_length_sqrt = edge_x**2 + edge_y**2
+            
+        
+          for cx, cy in corners:
+             t = ((cx - p1[0]) * edge_x + (cy - p1[1]) * edge_y) / edge_length_sqrt
+           
+        
+             closest_x = p1[0] + t * edge_x
+             closest_y = p1[1] + t * edge_y
+            
+             dx = cx - closest_x
+             dy = cy - closest_y
+             distance = (dx**2 + dy**2) ** 0.5
+    
+             if distance <= 6 and distance != 0:
+                 normal_x = dx / distance
+                 normal_y = dy / distance
+                  
+                 overlap = 6 - distance
+                 self.pos.x += normal_x * overlap
+                 self.pos.y += normal_y * overlap
+                  
+                 dot = self.velocity.x * normal_x + self.velocity.y * normal_y
+                 if dot < 0:
+                     self.velocity.x -= dot * normal_x
+                     self.velocity.y -= dot * normal_y
+                
 
 class Player(Character):
     """
@@ -253,7 +300,6 @@ class Player(Character):
 
         if keys[self.controls["boost"]]:
             self.boost()
-            
 
     def draw(self, screen):
         pygame.draw.rect(screen, (0, 123, 60), (self.pos.x, self.pos.y, self.width, self.height))
