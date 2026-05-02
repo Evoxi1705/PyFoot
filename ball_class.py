@@ -24,8 +24,10 @@ class Ball(DynamicObject):
         self.radius = radius
         self.bounce_factor = bounce_factor
         self.friction = FRICTION_BALL
+        self.goal_timer = 0
     
     def update(self, dt, field, player, easy_bot,triangles):
+        self.player_bot_collision(player, easy_bot)
         self._apply_gravity(dt)      
         self._apply_movement(dt)     
         self._apply_friction(dt, field)
@@ -74,7 +76,7 @@ class Ball(DynamicObject):
           elif triangle.corner == "top-left":
               p1, p2 = (x + s, y), (x, y + s)
           elif triangle.corner == "top-right":
-              p1, p2 = (x, y), (x + s, y + s)
+              p1, p2 = (x, y + s), (x + s, y)
           
           edge_x = p2[0] - p1[0]
           edge_y = p2[1] - p1[1]    
@@ -99,13 +101,15 @@ class Ball(DynamicObject):
               normal_x = dx / distance
               normal_y = dy / distance
     
-              overlap = self.radius - distance
+              overlap = self.radius - distance + 0.5
               self.pos.x += normal_x * overlap
               self.pos.y += normal_y * overlap
               
               dot = self.velocity.x * normal_x + self.velocity.y * normal_y
-              self.velocity.x = (self.velocity.x - 2 * dot * normal_x) * self.bounce_factor
-              self.velocity.y = (self.velocity.y - 2 * dot * normal_y) * self.bounce_factor
+              
+              if dot < 0:
+                  self.velocity.x = (self.velocity.x - 2 * dot * normal_x) * self.bounce_factor
+                  self.velocity.y = (self.velocity.y - 2 * dot * normal_y) * self.bounce_factor
             
             
     
@@ -130,11 +134,46 @@ class Ball(DynamicObject):
             self.pos.x += normal_x * overlap
             self.pos.y += normal_y * overlap
             
-            dot = self.velocity.x * normal_x + self.velocity.y * normal_y
-            self.velocity.x = (self.velocity.x - 2 * dot * normal_x) * self.bounce_factor
-            self.velocity.y = (self.velocity.y - 2 * dot * normal_y) * self.bounce_factor
+            rel_vx = self.velocity.x - player.velocity.x
+            rel_vy = self.velocity.y - player.velocity.y
             
+            dot = rel_vx * normal_x + rel_vy * normal_y
+            
+            if dot < 0: #only if they move towards each other
+                self.velocity.x = (self.velocity.x - 2 * dot * normal_x) * self.bounce_factor
+                self.velocity.y = (self.velocity.y - 2 * dot * normal_y) * self.bounce_factor
+            
+                # Only transfer the player velocity component along the normal
+                player_dot = player.velocity.x * normal_x + player.velocity.y * normal_y
+                if player_dot > 0:  # player pushing toward ball
+                    self.velocity.x += normal_x * player_dot * self.bounce_factor
+                    self.velocity.y += normal_y * player_dot * self.bounce_factor
+            
+    def player_bot_collision(self, player, bot):
+        if player.collides_with(bot):
+            overlap_x = min(player.get_right(), bot.get_right()) - max(player.get_left(), bot.get_left())
+            overlap_y = min(player.get_bottom(), bot.get_bottom()) - max(player.get_top(), bot.get_top())
+            
+            if overlap_x < overlap_y:
+                push = overlap_x / 2 + 1.0
+                if player.pos.x < bot.pos.x:
+                    player.pos.x -= push
+                    bot.pos.x += push
+                else:
+                    player.pos.x += push
+                    bot.pos.x -= push
+                player.velocity.x, bot.velocity.x = bot.velocity.x * 0.5, player.velocity.x * 0.5
+            else:
+                push = overlap_y / 2 + 1.0
+                if player.pos.y < bot.pos.y:
+                    player.pos.y -= push
+                    bot.pos.y += push
+                else:
+                    player.pos.y += push
+                    bot.pos.y -= push
+                player.velocity.y, bot.velocity.y = bot.velocity.y * 0.5, player.velocity.y * 0.5
       
+    
     def goal(self, field):
         
         if self.pos.x + self.radius < BW:
@@ -142,6 +181,7 @@ class Ball(DynamicObject):
             self.pos.y = SCREEN_HEIGHT/2
             self.velocity.x = 0
             self.velocity.y = 0
+            self.goal_timer = 2000
             print('GOAAAL for the bot')
             
         if self.pos.x + self.radius > SCREEN_WIDTH - BW:
@@ -149,7 +189,18 @@ class Ball(DynamicObject):
             self.pos.y = SCREEN_HEIGHT/2
             self.velocity.x = 0
             self.velocity.y = 0
+            self.goal_timer = 2000
             print('GOAAAL for the player')
+            
+    def draw_goal_inscription(self, screen, dt):
+        if self.goal_timer > 0:
+            self.goal_timer -= dt * 1000
+            font = pygame.font.SysFont(None, 120)
+            text = font.render("GOAL!", True, (255, 255, 0))
+            rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+            screen.blit(text, rect)
+                    
+        
 
                 
         
