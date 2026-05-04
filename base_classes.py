@@ -350,7 +350,7 @@ class EasyBot(Bot):
         self.FSM.states["Defend"] = Defend(self)
         self.FSM.SetState("Attack")  # start in attack
 
-    def _handle_action(self, dt, field):
+    def _handle_action(self, dt, field, starting_time):
 
         if self.ball.pos.x < SCREEN_WIDTH/2:
             self.FSM.change_state(self.FSM.states["Attack"])
@@ -377,9 +377,9 @@ class MediumBot(Bot):
         self.FSM.states["Attack"] = MediumAttack(self)
         self.FSM.states["Defend"] = MediumDefend(self)
 
-    def _handle_action(self, dt, field):
-
-        if self.ball.pos.x < SCREEN_WIDTH/2:
+    def _handle_action(self, dt, field, starting_time):
+        
+        if self.ball.pos.x < self.pos.x:
             self.FSM.change_state(self.FSM.states["Attack"])
             self.FSM.execute(dt, field)
         else:
@@ -396,16 +396,22 @@ class HardBot(Bot):
                  height, 
                  width, 
                  player, 
-                 ball, 
+                 ball,
+                 starting_time, 
                  **kwargs):
         
         super().__init__(pos, velocity, height, width, player, ball, **kwargs)
-        self.FSM.states["Attack"] = MediumAttack(self)
-        self.FSM.states["Defend"] = MediumDefend(self)
-
-    def _handle_action(self, dt, field):
+        self.starting_time = starting_time
+        self.FSM = FSM()
+        self.FSM.states["Attack"] = HardAttack(self)
+        self.FSM.states["Defend"] = HardDefend(self)
         
-        if self.ball.pos.x < SCREEN_WIDTH/2:
+    def _handle_action(self, dt, field, starting_time):
+        # Making the bot faster and faster
+        progress = (pygame.time.get_ticks() - starting_time)/GAME_DURATION
+        self.max_speed = self.max_speed*(1 + progress)
+
+        if self.ball.pos.x < self.pos.x:
             self.FSM.change_state(self.FSM.states["Attack"])
             self.FSM.execute(dt, field)
         else:
@@ -431,7 +437,6 @@ class Attack(State):
         return now - self.bot.last_action > DELAY_EASYBOT
 
     def run(self, dt, field):
-        now = pygame.time.get_ticks()
         # Decision making
         if self._should_act():
             self.bot.last_action = pygame.time.get_ticks()
@@ -470,6 +475,17 @@ class MediumAttack(Attack):
         return True
 
 class MediumDefend(Defend):
+    def __init__(self, bot):
+        super().__init__(bot)
+
+class HardAttack(Attack):
+    def __init__(self, bot):
+        super().__init__(bot)
+
+    def _should_act(self):
+        return True
+
+class HardDefend(Defend):
     def __init__(self, bot):
         super().__init__(bot)
 

@@ -35,7 +35,7 @@ class Ball(DynamicObject):
         self.bounce_triangle(triangles)
         self.ball_player_collision(player)
         self.ball_player_collision(easy_bot)
-        self.goal(field)
+ 
         
     def draw(self, screen):
         pygame.draw.circle(screen, (0,255,0), (self.pos.x + self.radius, self.pos.y + self.radius), self.radius)
@@ -183,6 +183,7 @@ class Ball(DynamicObject):
             self.velocity.y = 0
             self.goal_timer = 2000
             print('GOAAAL for the bot')
+            return "bot"
             
         if self.pos.x + self.radius > SCREEN_WIDTH - BW:
             self.pos.x = SCREEN_WIDTH/2 
@@ -191,6 +192,7 @@ class Ball(DynamicObject):
             self.velocity.y = 0
             self.goal_timer = 2000
             print('GOAAAL for the player')
+            return "player"
             
     def draw_goal_inscription(self, screen, dt):
         if self.goal_timer > 0:
