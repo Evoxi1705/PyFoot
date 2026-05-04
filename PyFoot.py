@@ -21,7 +21,7 @@ field = TempField()
 pygame.display.set_caption("Main Menu")
 
 player = Player(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100)
-ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 30)
+ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 50)
 
 difficulty = show_menu()
 
