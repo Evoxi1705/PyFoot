@@ -21,7 +21,7 @@ field = TempField()
 pygame.display.set_caption("Main Menu")
 
 player = Player(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100)
-ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 50)
+ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 30)
 
 difficulty = show_menu()
 
@@ -37,12 +37,14 @@ while run:
     dt = clock.tick(60) / 1000  # dt is roughly 0.016 at 60fps
     
     window.fill((0,0,0))
+    
     level.draw(window)
     level.update(dt, field)
     level._handle_action(dt, field)
-
+    
     ball.draw(window)
     ball.update(dt, field, player, level, triangles)
+    ball.draw_goal_inscription(window, dt)
 
     player.draw(window)    
     player.update(dt, field)
