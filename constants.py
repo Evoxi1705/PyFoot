@@ -23,6 +23,11 @@ BW = 115 #block width
 BH = 250 # block height
 TH = 50 #triangle height = triangle width
 
+POWERUP_HEIGHT = 30
+POWERUP_WIDTH = 30
+POWERUP_DURATION = 5000
+POWERUP_FREQUENCY = 10000
+
 #UI
 BUTTON_WIDTH = 300
 BUTTON_HEIGHT = 75

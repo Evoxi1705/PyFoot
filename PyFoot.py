@@ -4,6 +4,8 @@ from ball_class import *
 from constants import *
 from wall_class import *
 from PyFoot_UI import show_menu
+import random
+from powerups import *
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -25,6 +27,8 @@ def run_game(difficulty):
     ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 30)
     
     starting_time = pygame.time.get_ticks()
+    active_powerups = []
+    last_powerup_time = starting_time
 
     # Bot creation
     if difficulty == "Easy":
@@ -80,6 +84,22 @@ def run_game(difficulty):
             triangle_bottom_left.draw(window)
             triangle_top_right.draw(window)
             triangle_bottom_right.draw(window)
+
+            # Generates power ups at random spots every certain amount of time
+            now = pygame.time.get_ticks()
+            if now - last_powerup_time > POWERUP_FREQUENCY:
+                last_powerup_time = now
+                x = random.randint(field.get_left(), field.get_right())
+                y = random.randint(field.get_top(), field.get_bottom())
+                new_powerup = random.choice([FasterPowerUp, HighJumpPowerUp, LongerBoostPowerUp])
+                active_powerups.append(new_powerup(Vector2(x, y), POWERUP_HEIGHT, POWERUP_WIDTH))
+
+            # Makes the powerups stay for a certain duration
+            active_powerups = [p for p in active_powerups if pygame.time.get_ticks() - p.spawn_time < POWERUP_DURATION]
+
+            for powerup in active_powerups:
+                powerup.draw(window)
+
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
