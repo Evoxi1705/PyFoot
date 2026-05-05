@@ -7,14 +7,11 @@ pygame.init()
 def show_menu():
     window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     manager = pygame_gui.UIManager((SCREEN_WIDTH, SCREEN_HEIGHT), "UI_theme.json")
-    """
+
     # Background
     bg = pygame.image.load("Rocket League Sideswipe Season 24.webp")
     bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
-    """
-    # Instead of loading an image, just fill with a color
-    bg = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
-    bg.fill((30, 30, 30))
+
     # Title
     # title_rect = pygame.Rect(SCREEN_WIDTH/2 - TEXT_WIDTH/2, SCREEN_HEIGHT/5 - BUTTON_HEIGHT/2, TEXT_WIDTH, TEXT_HEIGHT)
     # title = pygame_gui.elements.UILabel(title_rect, "PyFoot", manager, object_id="#main_title")

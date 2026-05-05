@@ -17,6 +17,7 @@ PLAYER1_CONTROLS = {"left": pygame.K_LEFT, "right": pygame.K_RIGHT, "jump": pyga
 PLAYER2_CONTROLS = {"left": pygame.K_a, "right": pygame.K_d, "jump": pygame.K_s, "boost": pygame.K_w}
 DELAY_EASYBOT = 10
 BOUNCE_FACTOR = 0.8
+GAME_DURATION = 30000
 
 BW = 115 #block width
 BH = 250 # block height

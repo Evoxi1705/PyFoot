@@ -1,6 +1,4 @@
-#!/bin/sh
-'''exec' "/Users/paulinedewil/Documents/VUB/1 BA/S2/AI en SO/WPO /Project/PyFoot/.venv/bin/python3.13" "$0" "$@"
-' '''
+#!/Users/paulinedewil/Documents/GitHub/PyFoot/.venv/bin/python3.13
 import sys
 from pip._internal.cli.main import main
 if __name__ == '__main__':
