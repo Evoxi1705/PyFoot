@@ -334,6 +334,40 @@ class Player(Character):
     def draw(self, screen):
         screen.blit(self.image, (self.pos.x, self.pos.y))
 
+class Bot(Character):
+    """
+    Represents the AI-controlled character.
+
+    Makes decisions based on the game state each frame.
+
+    Attributes:
+        player (Player): Reference to the human-controlled character.
+        ball (Ball): Reference to the ball object.
+    """
+    def __init__(self, 
+                 pos: Vector2, 
+                 velocity: Vector2,
+                 height, 
+                 width, 
+                 player,
+                 ball,
+                 **kwargs):
+
+        self.player = player
+        self.ball: "Ball" = ball
+        super().__init__(pos, velocity, height, width, **kwargs)
+        self.image = pygame.image.load("bot.png")
+        self.image = pygame.transform.scale(self.image, (width, height))
+
+
+    def draw(self, screen):
+        """Renders the bot as a rectangle onto the provided Pygame surface."""
+        screen.blit(self.image, (self.pos.x, self.pos.y))
+    @abstractmethod
+    def _handle_action(self, dt):
+        """Abstract method — subclasses must implement per-frame AI decision logic."""
+        pass
+
 class EasyBot(Bot):
     """
     AI-controlled character with slow reactions and predictable behavior.
