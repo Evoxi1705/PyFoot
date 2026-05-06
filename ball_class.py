@@ -6,8 +6,6 @@ import pygame
 walls = [block_top_left, block_bottom_left, block_top_right, block_bottom_right, block_top, block_bottom]
 triangles = [triangle_bottom_left, triangle_top_left, triangle_bottom_right, triangle_top_right]
 
-
-
 class Ball(DynamicObject):
     """
     Represents the ball in the game world.

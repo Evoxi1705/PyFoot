@@ -1,17 +1,30 @@
 import pygame
+import random
 from base_classes import *
 from ball_class import *
 from constants import *
 from wall_class import *
 from PyFoot_UI import show_menu
-import random
 from powerups import *
 
+"""
+This file is the main game loop. It's where all the dots finally connect!
+Running this file will let you play our game,
+Have fun!
+"""
+
 pygame.init()
+pygame.display.set_caption("Main Menu")
 clock = pygame.time.Clock()
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-
+field = Field()
 def draw_boundaries(window):
+    """
+    Draws the boundaries of the field on the screen.
+    
+    Args:
+        window (pygame display): Canvas on which the boundaries have to be drawn.
+    """
     block_top_left.draw(window)
     block_bottom_left.draw(window)
     block_top_right.draw(window)
@@ -24,10 +37,15 @@ def draw_boundaries(window):
     triangle_top_right.draw(window)
     triangle_bottom_right.draw(window)
 
-field = Field()
-pygame.display.set_caption("Main Menu")
 
+# Main function   
 def run_game(difficulty):
+    """
+    Runs the main game loop.
+    
+    Args:
+        difficulty (string): String indicating the chosen difficulty.
+    """
     # Player and ball creation
     player = Player(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100)
     player_score = 0
@@ -71,15 +89,18 @@ def run_game(difficulty):
             level.update(dt, field)
             level._handle_action(dt, field, starting_time)
             
+            # Ball rendering
             ball.draw(window)
             ball.update(dt, field, player, level, triangles)
             ball.draw_goal_inscription(window, dt)
 
+            # Player rendering
             player.draw(window)    
             player.update(dt, field)
             player._handle_inputs(dt, field)
             player.bounce_triangle(triangles)
 
+            # Arena rendering
             draw_boundaries(window)
 
             # Generates power ups at random spots every certain amount of time
@@ -94,14 +115,15 @@ def run_game(difficulty):
             # Makes the powerups stay for a certain duration
             active_powerups = [p for p in active_powerups if pygame.time.get_ticks() - p.spawn_time < POWERUP_DURATION]
 
+            # Powerup rendering
             for powerup in active_powerups:
                 powerup.draw(window)
-
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
             
+            # Keeps the score of each character
             who_scored = ball.goal(field)
             if who_scored == "player":
                  player_score += 1
@@ -114,7 +136,7 @@ def run_game(difficulty):
     return "quit"
             
 
-
+# Switch between menu and game
 while True:
     difficulty = show_menu()
     result = run_game(difficulty)

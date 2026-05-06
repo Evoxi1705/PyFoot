@@ -218,7 +218,13 @@ class Character(DynamicObject):
             self.velocity.y = -self.jump_force
             
     def bounce_triangle(self, triangles):
+        """
+        Resolves collision between the charachters and triangle corner pieces.
+        Uses closest-point-on-segment math to compute the bounce normal.
 
+        Args:
+            triangles (list): List of Triangle objects to check against.
+        """
         corners = [(self.pos.x, self.pos.y),(self.pos.x, self.pos.y + self.height), (self.pos.x + self.width, self.pos.y), (self.pos.x + self.width, self.pos.y + self.height)]
         
         for triangle in triangles:
@@ -283,6 +289,9 @@ class Player(Character):
         super().__init__(pos, velocity, height, width, **kwargs)
 
     def _handle_inputs(self, dt, field):
+        """
+        Interprets the input from the player.
+        """
         keys = pygame.key.get_pressed()
 
         if keys[self.controls["left"]]:
@@ -324,6 +333,7 @@ class Bot(Character):
         super().__init__(pos, velocity, height, width, **kwargs)
 
     def draw(self, screen):
+        """Renders the bot as a rectangle onto the provided Pygame surface."""
         pygame.draw.rect(screen, (0, 123, 214), (self.pos.x, self.pos.y, self.width, self.height))
 
     @abstractmethod

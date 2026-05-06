@@ -1,5 +1,11 @@
 import pygame
 
+"""
+This file contains all the parameters that are used across the whole code.
+That way we can easily adapt a constant when needed, 
+No need to search through the whole code!
+"""
+
 GRAVITY = 2000
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -19,6 +25,7 @@ DELAY_EASYBOT = 10
 BOUNCE_FACTOR = 0.7
 GAME_DURATION = 30000
 
+# Field dimensions
 BW = 115 #block width
 BH = 250 # block height
 TH = 50 #triangle height = triangle width
