@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 import pygame
-from game_loop import *
 from constants import *
 from class_tools import Vector2
 
@@ -99,7 +98,7 @@ class DynamicObject(Entity):
         Applies downward acceleration to the vertical velocity.
         """
         self.velocity.y += GRAVITY*dt
-
+        
     def _handle_borders(self, field): # The first _ means the method is meant to be local, not called outside the class
         """ Keeps the object inside the game world. """
         if self.get_bottom() > field.get_bottom():
@@ -117,6 +116,7 @@ class DynamicObject(Entity):
         if self.get_left() < field.get_left():
             self.pos.x = field.get_left()
             self.velocity.x = 0
+
 
     @abstractmethod
     def draw(self, screen):
@@ -181,7 +181,8 @@ class Character(DynamicObject):
         """Accelerates the character to the left up to max_speed"""
         if self.velocity.x > -self.max_speed:
             self.velocity.x -= ACCELERATION*dt
-
+            
+     
     def move_right(self, dt):
         """Accelerates the character to the right up to max_speed"""
         if self.velocity.x < self.max_speed:
@@ -215,6 +216,51 @@ class Character(DynamicObject):
         """
         if self.get_bottom() >= field.get_bottom():
             self.velocity.y = -self.jump_force
+            
+    def bounce_triangle(self, triangles):
+
+        corners = [(self.pos.x, self.pos.y),(self.pos.x, self.pos.y + self.height), (self.pos.x + self.width, self.pos.y), (self.pos.x + self.width, self.pos.y + self.height)]
+        
+        for triangle in triangles:
+          x, y, s = triangle.pos.x, triangle.pos.y, triangle.size
+        
+          if triangle.corner == "bottom-left":
+              p1, p2 = (x, y), (x + s, y + s)
+          elif triangle.corner == "bottom-right":
+              p1, p2 = (x + s, y), (x, y + s)
+          elif triangle.corner == "top-left":
+              p1, p2 = (x + s, y), (x, y + s)
+          elif triangle.corner == "top-right":
+              p1, p2 = (x, y), (x + s, y + s)
+          
+         
+          edge_x = p2[0] - p1[0]
+          edge_y = p2[1] - p1[1]    
+          edge_length_sqrt = edge_x**2 + edge_y**2
+
+    
+          for cx, cy in corners:
+             t = ((cx - p1[0]) * edge_x + (cy - p1[1]) * edge_y) / edge_length_sqrt
+           
+             closest_x = p1[0] + t * edge_x
+             closest_y = p1[1] + t * edge_y
+            
+             dx = cx - closest_x
+             dy = cy - closest_y
+             distance = (dx**2 + dy**2) ** 0.5
+             
+             if distance <= 6 and distance != 0:
+                normal_x = dx / distance
+                normal_y = dy / distance
+
+                self.pos.x += normal_x * 10
+                self.pos.y += normal_y * 10
+             
+                dot = self.velocity.x * normal_x + self.velocity.y * normal_y
+                if dot < 0:
+                    self.velocity.x -= dot * normal_x
+                    self.velocity.y -= dot * normal_y
+              
 
 class Player(Character):
     """
@@ -278,8 +324,8 @@ class Bot(Character):
         self.ball: "Ball" = ball
         super().__init__(pos, velocity, height, width, **kwargs)
 
-    def draw(self):
-        pass
+    def draw(self, screen):
+        pygame.draw.rect(screen, (0, 123, 214), (self.pos.x, self.pos.y, self.width, self.height))
 
     @abstractmethod
     def _handle_action(self, dt):
@@ -294,45 +340,26 @@ class EasyBot(Bot):
                  width, 
                  player, 
                  ball,
-                 side=BOT_SIDE,
                  **kwargs):
         
         super().__init__(pos, velocity, height, width, player, ball, **kwargs)
         self.current_action = ""
         self.last_action = 0
-        self.side = side
-        self.FSM = FSM(self)
-        self.Defend = True
+        self.FSM = FSM()
+        self.FSM.states["Attack"] = Attack(self)
+        self.FSM.states["Defend"] = Defend(self)
+        self.FSM.SetState("Attack")  # start in attack
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, (0, 123, 214), (self.pos.x, self.pos.y, self.width, self.height))
+    def _handle_action(self, dt, field, starting_time):
 
-    def _handle_action(self, dt, field):
-
-        now = pygame.time.get_ticks()
-        
-        # Decision making
-        if now - self.last_action > DELAY_EASYBOT:
-            self.last_action = pygame.time.get_ticks()
-            if self.pos.x < self.ball.pos.x:
-                self.current_action = "right"
-            elif self.pos.x > self.ball.pos.x:
-                self.current_action = "left"
-
-            if self.ball.pos.y < self.get_top():
-                self.jump(field)
-
-        # Boost execution   
-        if self.side*(self.ball.pos.x - SCREEN_WIDTH/2) < 0:
-            self.boost()
-
-        if self.current_action == "right":
-            self.move_right(dt)
-        elif self.current_action == "left":
-            self.move_left(dt)
+        if self.ball.pos.x < SCREEN_WIDTH/2:
+            self.FSM.change_state(self.FSM.states["Attack"])
+            self.FSM.execute(dt, field)
+        else:
+            self.FSM.change_state(self.FSM.states["Defend"])
+            self.FSM.execute(dt, field)
 
         
-
 class MediumBot(Bot):
     
     def __init__(self, 
@@ -343,14 +370,22 @@ class MediumBot(Bot):
                  player, 
                  ball, 
                  **kwargs):
-        
         super().__init__(pos, velocity, height, width, player, ball, **kwargs)
+        self.current_action = ""
+        self.last_action = 0
+        self.FSM = FSM()
+        self.FSM.states["Attack"] = MediumAttack(self)
+        self.FSM.states["Defend"] = MediumDefend(self)
 
-    def draw(self):
-        pass
+    def _handle_action(self, dt, field, starting_time):
+        
+        if self.ball.pos.x < self.pos.x:
+            self.FSM.change_state(self.FSM.states["Attack"])
+            self.FSM.execute(dt, field)
+        else:
+            self.FSM.change_state(self.FSM.states["Defend"])
+            self.FSM.execute(dt, field)
 
-    def _handle_action(self, dt):
-        pass
 
 class HardBot(Bot):
 
@@ -361,65 +396,109 @@ class HardBot(Bot):
                  height, 
                  width, 
                  player, 
-                 ball, 
+                 ball,
+                 starting_time, 
                  **kwargs):
         
         super().__init__(pos, velocity, height, width, player, ball, **kwargs)
+        self.starting_time = starting_time
+        self.FSM = FSM()
+        self.FSM.states["Attack"] = HardAttack(self)
+        self.FSM.states["Defend"] = HardDefend(self)
+        
+    def _handle_action(self, dt, field, starting_time):
+        # Making the bot faster and faster
+        progress = (pygame.time.get_ticks() - starting_time)/GAME_DURATION
+        self.max_speed = self.max_speed*(1 + progress)
 
-    def draw(self):
-        pass
+        if self.ball.pos.x < self.pos.x:
+            self.FSM.change_state(self.FSM.states["Attack"])
+            self.FSM.execute(dt, field)
+        else:
+            self.FSM.change_state(self.FSM.states["Defend"])
+            self.FSM.execute(dt, field)
 
-    def _handle_action(self, dt):
-        pass
 
-import pygame
+#========================================================
 
-##=========================================
 class State:
-    pass
+    def __init__(self, bot):
+        self.bot = bot
 
-class Defend(State):
-    def Execute(self):
+    def execute(self, dt, field):
         pass
 
 class Attack(State):
-    def Execute(self):
-        pass
-##=========================================
+    def __init__(self, bot):
+        super().__init__(bot)
 
-class Transitions(object):
-    def __init__(self, toState):
-        self.toState = toState
+    def _should_act(self):
+        now = pygame.time.get_ticks()
+        return now - self.bot.last_action > DELAY_EASYBOT
 
-    def Execute(self):
-        pass
-##=========================================
+    def run(self, dt, field):
+        # Decision making
+        if self._should_act():
+            self.bot.last_action = pygame.time.get_ticks()
+            if self.bot.pos.x < self.bot.ball.get_right():
+                self.bot.current_action = "right"
+            elif self.bot.pos.x > self.bot.ball.pos.x:
+                self.bot.current_action = "left"
 
-class FSM(object):
-    def __init__(self, char):
-        self.char = char
+            if self.bot.ball.get_bottom() < self.bot.get_top():
+                self.bot.jump(field)
+
+        # Boost execution   
+        if self.bot.ball.pos.x > SCREEN_WIDTH/2:
+            self.bot.boost()
+
+        if self.bot.current_action == "right":
+            self.bot.move_right(dt)
+        elif self.bot.current_action == "left":
+            self.bot.move_left(dt)
+
+class Defend(State):
+    def __init__(self, bot):
+        super().__init__(bot)
+
+    def run(self, dt, field):
+        if self.bot.pos.x < (SCREEN_WIDTH - BW):
+            self.bot.move_right(dt)
+        if self.bot.ball.get_bottom() < self.bot.get_top():
+            self.bot.jump(field)
+
+class MediumAttack(Attack):
+    def __init__(self, bot):
+        super().__init__(bot)
+
+    def _should_act(self):
+        return True
+
+class MediumDefend(Defend):
+    def __init__(self, bot):
+        super().__init__(bot)
+
+class HardAttack(Attack):
+    def __init__(self, bot):
+        super().__init__(bot)
+
+    def _should_act(self):
+        return True
+
+class HardDefend(Defend):
+    def __init__(self, bot):
+        super().__init__(bot)
+
+class FSM:
+    def __init__(self):
+        self.current_state = None
         self.states = {}
-        self.transitions = {}
-        self.curState = None
-        self.trans = None
 
     def SetState(self, stateName):
-        self.curState = self.states[stateName]
+        self.current_state = self.states[stateName]
 
-    def Transition(self, transName):
-        self.trans = self.transitions[transName]
+    def change_state(self, new_state):
+        self.current_state = new_state
 
-    def Execute(self):
-        if (self.trans):
-            self.trans.Execute()
-            self.SetState(self.trans.toState)
-            self.trans = None
-        self.curState.Execute()
-##=========================================
-
-if __name__ == "__main__":
-    bot = EasyBot()
-
-    bot.FSM.state["Defending"] = Defend()
-    bot.FSM.state["Attacking"] = Attack()
-    bot.FSM.transitions["toAttack"]
+    def execute(self, dt, field):
+        self.current_state.run(dt, field)
