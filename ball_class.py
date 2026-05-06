@@ -6,19 +6,20 @@ import pygame
 walls = [block_top_left, block_bottom_left, block_top_right, block_bottom_right, block_top, block_bottom]
 triangles = [triangle_bottom_left, triangle_top_left, triangle_bottom_right, triangle_top_right]
 
-"""
-Class defining the ball and the bouncing of it
 
-Attributes:
-    pos : position of the ball
-    velocity : velocity of the ball
-    both of these attribute are inheritate of the dynamic object class
-   
-    radius : radius of the ball, needed for de boucing
-    bounce_factor : "how much" de ball gain in velocity after the bounce
-"""
 
 class Ball(DynamicObject):
+    """
+    Represents the ball in the game world.
+
+    Handles physics, bouncing, collision with players and triangles, and goal detection.
+
+    Attributes:
+        radius (int): Radius of the ball in pixels.
+        bounce_factor (float): Velocity multiplier applied after a bounce.
+        friction (float): Deceleration rate when ball rolls on the ground.
+        goal_timer (int): Countdown in milliseconds for the GOAL inscription display.
+    """
     def __init__(self,pos,velocity,radius,bounce_factor=BOUNCE_FACTOR):
         super().__init__(pos, velocity, radius*2, radius*2)
         self.radius = radius
@@ -27,6 +28,16 @@ class Ball(DynamicObject):
         self.goal_timer = 0
     
     def update(self, dt, field, player, easy_bot,triangles):
+        """
+        Updates the ball's physics, collisions, and goal state each frame.
+
+        Args:
+            dt (float): Delta time in seconds since the last frame.
+            field: The field object defining the play area boundaries.
+            player (Player): The human-controlled character.
+            bot (Bot): The AI-controlled character.
+            triangles (list): List of Triangle objects for bounce detection.
+        """
         self.player_bot_collision(player, easy_bot)
         self._apply_gravity(dt)      
         self._apply_movement(dt)     
@@ -35,9 +46,9 @@ class Ball(DynamicObject):
         self.bounce_triangle(triangles)
         self.ball_player_collision(player)
         self.ball_player_collision(easy_bot)
- 
         
     def draw(self, screen):
+        """Renders the ball as a circle onto the provided Pygame surface."""
         pygame.draw.circle(screen, (0,255,0), (self.pos.x + self.radius, self.pos.y + self.radius), self.radius)
         
     def _handle_borders(self, field): 
@@ -60,9 +71,14 @@ class Ball(DynamicObject):
                 self.pos.x = field.get_left()
                 self.velocity.x = abs(self.velocity.x) * self.bounce_factor
         
-
     def bounce_triangle(self, triangles):
+        """
+        Resolves collision between the ball and triangle corner pieces.
+        Uses closest-point-on-segment math to compute the bounce normal.
 
+        Args:
+            triangles (list): List of Triangle objects to check against.
+        """
         cx = self.pos.x + self.radius
         cy = self.pos.y + self.radius
         
@@ -109,12 +125,16 @@ class Ball(DynamicObject):
               
               if dot < 0:
                   self.velocity.x = (self.velocity.x - 2 * dot * normal_x) * self.bounce_factor
-                  self.velocity.y = (self.velocity.y - 2 * dot * normal_y) * self.bounce_factor
-            
-            
+                  self.velocity.y = (self.velocity.y - 2 * dot * normal_y) * self.bounce_factor            
     
     def ball_player_collision(self, player):
-        
+        """
+        Resolves collision between the ball and a rectangular character.
+        Applies impulse based on relative velocity along the collision normal.
+
+        Args:
+            player (Character): The character to check collision against.
+        """
         cx = self.pos.x + self.radius
         cy = self.pos.y + self.radius
         
@@ -150,6 +170,14 @@ class Ball(DynamicObject):
                     self.velocity.y += normal_y * player_dot * self.bounce_factor
             
     def player_bot_collision(self, player, bot):
+        """
+        Resolves overlap between the player and bot using AABB separation.
+        Pushes both characters apart and exchanges velocity components.
+
+        Args:
+            player (Player): The human-controlled character.
+            bot (Bot): The AI-controlled character.
+        """
         if player.collides_with(bot):
             overlap_x = min(player.get_right(), bot.get_right()) - max(player.get_left(), bot.get_left())
             overlap_y = min(player.get_bottom(), bot.get_bottom()) - max(player.get_top(), bot.get_top())
@@ -173,9 +201,13 @@ class Ball(DynamicObject):
                     bot.pos.y -= push
                 player.velocity.y, bot.velocity.y = bot.velocity.y * 0.5, player.velocity.y * 0.5
       
-    
     def goal(self, field):
-        
+        """
+        Detects if the ball has crossed either goal line and resets it to center.
+
+        Returns:
+            str: 'player' if the player scored, 'bot' if the bot scored, None otherwise.
+        """
         if self.pos.x + self.radius < BW:
             self.pos.x = SCREEN_WIDTH/2 
             self.pos.y = SCREEN_HEIGHT/2
@@ -195,6 +227,13 @@ class Ball(DynamicObject):
             return "player"
             
     def draw_goal_inscription(self, screen, dt):
+        """
+        Displays a GOAL inscription at the center of the screen for 2 seconds after a goal.
+
+        Args:
+            screen: The Pygame surface to draw on.
+            dt (float): Delta time in seconds since the last frame.
+        """
         if self.goal_timer > 0:
             self.goal_timer -= dt * 1000
             font = pygame.font.SysFont(None, 120)
