@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 import pygame
-from game_loop import *
 from constants import *
 from class_tools import Vector2
 
@@ -217,6 +216,51 @@ class Character(DynamicObject):
         """
         if self.get_bottom() >= field.get_bottom():
             self.velocity.y = -self.jump_force
+            
+    def bounce_triangle(self, triangles):
+
+        corners = [(self.pos.x, self.pos.y),(self.pos.x, self.pos.y + self.height), (self.pos.x + self.width, self.pos.y), (self.pos.x + self.width, self.pos.y + self.height)]
+        
+        for triangle in triangles:
+          x, y, s = triangle.pos.x, triangle.pos.y, triangle.size
+        
+          if triangle.corner == "bottom-left":
+              p1, p2 = (x, y), (x + s, y + s)
+          elif triangle.corner == "bottom-right":
+              p1, p2 = (x + s, y), (x, y + s)
+          elif triangle.corner == "top-left":
+              p1, p2 = (x + s, y), (x, y + s)
+          elif triangle.corner == "top-right":
+              p1, p2 = (x, y), (x + s, y + s)
+          
+         
+          edge_x = p2[0] - p1[0]
+          edge_y = p2[1] - p1[1]    
+          edge_length_sqrt = edge_x**2 + edge_y**2
+
+    
+          for cx, cy in corners:
+             t = ((cx - p1[0]) * edge_x + (cy - p1[1]) * edge_y) / edge_length_sqrt
+           
+             closest_x = p1[0] + t * edge_x
+             closest_y = p1[1] + t * edge_y
+            
+             dx = cx - closest_x
+             dy = cy - closest_y
+             distance = (dx**2 + dy**2) ** 0.5
+             
+             if distance <= 6 and distance != 0:
+                normal_x = dx / distance
+                normal_y = dy / distance
+
+                self.pos.x += normal_x * 10
+                self.pos.y += normal_y * 10
+             
+                dot = self.velocity.x * normal_x + self.velocity.y * normal_y
+                if dot < 0:
+                    self.velocity.x -= dot * normal_x
+                    self.velocity.y -= dot * normal_y
+              
 
 class Player(Character):
     """
@@ -253,7 +297,6 @@ class Player(Character):
 
         if keys[self.controls["boost"]]:
             self.boost()
-            
 
     def draw(self, screen):
         pygame.draw.rect(screen, (0, 123, 60), (self.pos.x, self.pos.y, self.width, self.height))
@@ -281,8 +324,8 @@ class Bot(Character):
         self.ball: "Ball" = ball
         super().__init__(pos, velocity, height, width, **kwargs)
 
-    def draw(self):
-        pass
+    def draw(self, screen):
+        pygame.draw.rect(screen, (0, 123, 214), (self.pos.x, self.pos.y, self.width, self.height))
 
     @abstractmethod
     def _handle_action(self, dt):
@@ -307,10 +350,7 @@ class EasyBot(Bot):
         self.FSM.states["Defend"] = Defend(self)
         self.FSM.SetState("Attack")  # start in attack
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, (0, 123, 214), (self.pos.x, self.pos.y, self.width, self.height))
-
-    def _handle_action(self, dt, field):
+    def _handle_action(self, dt, field, starting_time):
 
         if self.ball.pos.x < SCREEN_WIDTH/2:
             self.FSM.change_state(self.FSM.states["Attack"])
@@ -330,14 +370,22 @@ class MediumBot(Bot):
                  player, 
                  ball, 
                  **kwargs):
-        
         super().__init__(pos, velocity, height, width, player, ball, **kwargs)
+        self.current_action = ""
+        self.last_action = 0
+        self.FSM = FSM()
+        self.FSM.states["Attack"] = MediumAttack(self)
+        self.FSM.states["Defend"] = MediumDefend(self)
 
-    def draw(self):
-        pass
+    def _handle_action(self, dt, field, starting_time):
+        
+        if self.ball.pos.x < self.pos.x:
+            self.FSM.change_state(self.FSM.states["Attack"])
+            self.FSM.execute(dt, field)
+        else:
+            self.FSM.change_state(self.FSM.states["Defend"])
+            self.FSM.execute(dt, field)
 
-    def _handle_action(self, dt):
-        pass
 
 class HardBot(Bot):
 
@@ -348,16 +396,30 @@ class HardBot(Bot):
                  height, 
                  width, 
                  player, 
-                 ball, 
+                 ball,
+                 starting_time, 
                  **kwargs):
         
         super().__init__(pos, velocity, height, width, player, ball, **kwargs)
+        self.starting_time = starting_time
+        self.FSM = FSM()
+        self.FSM.states["Attack"] = HardAttack(self)
+        self.FSM.states["Defend"] = HardDefend(self)
+        
+    def _handle_action(self, dt, field, starting_time):
+        # Making the bot faster and faster
+        progress = (pygame.time.get_ticks() - starting_time)/GAME_DURATION
+        self.max_speed = self.max_speed*(1 + progress)
 
-    def draw(self):
-        pass
+        if self.ball.pos.x < self.pos.x:
+            self.FSM.change_state(self.FSM.states["Attack"])
+            self.FSM.execute(dt, field)
+        else:
+            self.FSM.change_state(self.FSM.states["Defend"])
+            self.FSM.execute(dt, field)
 
-    def _handle_action(self, dt):
-        pass
+
+#========================================================
 
 class State:
     def __init__(self, bot):
@@ -370,17 +432,20 @@ class Attack(State):
     def __init__(self, bot):
         super().__init__(bot)
 
-    def run(self, dt, field):
+    def _should_act(self):
         now = pygame.time.get_ticks()
+        return now - self.bot.last_action > DELAY_EASYBOT
+
+    def run(self, dt, field):
         # Decision making
-        if now - self.bot.last_action > DELAY_EASYBOT:
+        if self._should_act():
             self.bot.last_action = pygame.time.get_ticks()
-            if self.bot.pos.x < self.bot.ball.pos.x:
+            if self.bot.pos.x < self.bot.ball.get_right():
                 self.bot.current_action = "right"
             elif self.bot.pos.x > self.bot.ball.pos.x:
                 self.bot.current_action = "left"
 
-            if self.bot.ball.pos.y < self.bot.get_top():
+            if self.bot.ball.get_bottom() < self.bot.get_top():
                 self.bot.jump(field)
 
         # Boost execution   
@@ -399,6 +464,30 @@ class Defend(State):
     def run(self, dt, field):
         if self.bot.pos.x < (SCREEN_WIDTH - BW):
             self.bot.move_right(dt)
+        if self.bot.ball.get_bottom() < self.bot.get_top():
+            self.bot.jump(field)
+
+class MediumAttack(Attack):
+    def __init__(self, bot):
+        super().__init__(bot)
+
+    def _should_act(self):
+        return True
+
+class MediumDefend(Defend):
+    def __init__(self, bot):
+        super().__init__(bot)
+
+class HardAttack(Attack):
+    def __init__(self, bot):
+        super().__init__(bot)
+
+    def _should_act(self):
+        return True
+
+class HardDefend(Defend):
+    def __init__(self, bot):
+        super().__init__(bot)
 
 class FSM:
     def __init__(self):
@@ -412,4 +501,4 @@ class FSM:
         self.current_state = new_state
 
     def execute(self, dt, field):
-         self.current_state.run(dt, field)
+        self.current_state.run(dt, field)
