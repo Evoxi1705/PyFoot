@@ -362,7 +362,7 @@ class EasyBot(Bot):
 
     def _handle_action(self, dt, field, starting_time):
         """Evaluates the game state and delegates to the FSM each frame."""
-        if self.ball.pos.x < SCREEN_WIDTH/2:
+        if self.ball.pos.x < self.pos.x:
             self.FSM.change_state(self.FSM.states["Attack"])
             self.FSM.execute(dt, field)
         else:
@@ -437,7 +437,7 @@ class HardBot(Bot):
         """Evaluates the game state and delegates to the FSM each frame."""
         # Making the bot faster and faster
         progress = (pygame.time.get_ticks() - starting_time)/GAME_DURATION
-        self.max_speed = self.max_speed*(1 + progress)
+        self.max_speed = MAX_SPEED*(1 + progress)
 
         if self.ball.pos.x < self.pos.x:
             self.FSM.change_state(self.FSM.states["Attack"])

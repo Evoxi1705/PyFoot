@@ -214,7 +214,6 @@ class Ball(DynamicObject):
             self.velocity.x = 0
             self.velocity.y = 0
             self.goal_timer = 2000
-            print('GOAAAL for the bot')
             return "bot"
             
         if self.pos.x + self.radius > SCREEN_WIDTH - BW:
@@ -223,7 +222,6 @@ class Ball(DynamicObject):
             self.velocity.x = 0
             self.velocity.y = 0
             self.goal_timer = 2000
-            print('GOAAAL for the player')
             return "player"
             
     def draw_goal_inscription(self, screen, dt):

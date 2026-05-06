@@ -57,4 +57,3 @@ def show_menu():
         pygame.display.flip()
     pygame.quit()
 
-show_menu()
