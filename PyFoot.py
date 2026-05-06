@@ -11,7 +11,6 @@ pygame.init()
 clock = pygame.time.Clock()
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-<<<<<<< HEAD
 def draw_boundaries(window):
     block_top_left.draw(window)
     block_bottom_left.draw(window)
@@ -19,55 +18,18 @@ def draw_boundaries(window):
     block_bottom_right.draw(window)
     block_top.draw(window)
     block_bottom.draw(window)
-=======
-class TempField:
-    def get_top(self): return 0
-    def get_bottom(self): return SCREEN_HEIGHT
-    def get_left(self): return 0 + BW
-    def get_right(self): return SCREEN_WIDTH - BW
 
-field = TempField()
-pygame.display.set_caption("Main Menu")
+    triangle_top_left.draw(window)
+    triangle_bottom_left.draw(window)
+    triangle_top_right.draw(window)
+    triangle_bottom_right.draw(window)
 
-def run_game(difficulty):
-    # Player and ball creation
-    player = Player(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100)
-    player_score = 0
-    ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 30)
-    
-    starting_time = pygame.time.get_ticks()
-
-    # Bot creation
-    if difficulty == "Easy":
-            level = EasyBot(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100, player, ball)
-    if difficulty == "Medium":
-            level = MediumBot(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100, player, ball)
-    if difficulty == "Hard":
-            level = HardBot(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT), Vector2(0,0), 50, 100, player, ball, starting_time)
-    bot_score = 0
-
-    # Game loop       
-    run = True
-    while run:
-        if (pygame.time.get_ticks()- starting_time) < GAME_DURATION:
-            dt = clock.tick(60) / 1000  # dt is roughly 0.016 at 60fps
-            
-            window.fill((0,0,0))
->>>>>>> 3921c9d5baa326e257d570bcc7f9d1333ad39a10
-
-            # Score display
-            font = pygame.font.SysFont(None, 60)
-            score_text = font.render(f"{player_score}  -  {bot_score}", True, (255, 0, 0))
-            rect = score_text.get_rect(center=(SCREEN_WIDTH / 2, 40))
-            window.blit(score_text, rect)
-
-<<<<<<< HEAD
 field = Field()
 pygame.display.set_caption("Main Menu")
 
 def run_game(difficulty):
     # Player and ball creation
-    player = Player(Vector2(BW + 50 , SCREEN_HEIGHT), Vector2(0,0), 50, 100)
+    player = Player(Vector2(BW + 50, SCREEN_HEIGHT), Vector2(0,0), 50, 100)
     player_score = 0
     ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 30)
     
@@ -88,8 +50,8 @@ def run_game(difficulty):
     run = True
     while run:
         if (pygame.time.get_ticks()- starting_time) < GAME_DURATION:
-            dt = clock.tick(60) / 1000  # dt is roughly 0.016 at 60fps
-            
+            dt = clock.tick(60) / 1000
+
             window.fill((0,0,0))
 
             # Score display
@@ -98,12 +60,10 @@ def run_game(difficulty):
             rect = score_text.get_rect(center=(SCREEN_WIDTH / 2, 40))
             window.blit(score_text, rect)
 
-=======
->>>>>>> 3921c9d5baa326e257d570bcc7f9d1333ad39a10
             # Timer display
-            time_left = max(0, GAME_DURATION - (pygame.time.get_ticks() - starting_time)) # max to prevent it going negative in the last frame
+            time_left = max(0, GAME_DURATION - (pygame.time.get_ticks() - starting_time))
             seconds_left = time_left // 1000
-            timer_text = font.render(f"{seconds_left // 60} : {seconds_left % 60:02d}", True, (255, 0, 0)) #02d makes it two digits
+            timer_text = font.render(f"{seconds_left // 60} : {seconds_left % 60:02d}", True, (255, 0, 0))
             timer_rect = timer_text.get_rect(center=(SCREEN_WIDTH / 2, 80))
             window.blit(timer_text, timer_rect)
 
@@ -117,7 +77,6 @@ def run_game(difficulty):
 
             player.draw(window)    
             player.update(dt, field)
-<<<<<<< HEAD
             player.collision_player_bot(level)
             player._handle_inputs(dt, field)
             player.bounce_triangle(triangles)
@@ -141,23 +100,6 @@ def run_game(difficulty):
                 if powerup.check_collected(player) or powerup.check_collected(level):
                     active_powerups.remove(powerup)
 
-=======
-            player._handle_inputs(dt, field)
-            player.bounce_triangle(triangles)
-
-            block_top_left.draw(window)
-            block_bottom_left.draw(window)
-            block_top_right.draw(window)
-            block_bottom_right.draw(window)
-            block_top.draw(window)
-            block_bottom.draw(window)
-
-            triangle_top_left.draw(window)
-            triangle_bottom_left.draw(window)
-            triangle_top_right.draw(window)
-            triangle_bottom_right.draw(window)
->>>>>>> 3921c9d5baa326e257d570bcc7f9d1333ad39a10
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
@@ -172,7 +114,6 @@ def run_game(difficulty):
         else:
             return "menu"
     return "quit"
-            
 
 
 while True:

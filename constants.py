@@ -1,5 +1,11 @@
 import pygame
 
+"""
+This file contains all the parameters that are used across the whole code.
+That way we can easily adapt a constant when needed, 
+No need to search through the whole code!
+"""
+
 GRAVITY = 2000
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -16,13 +22,10 @@ ACCELERATION = 3000
 PLAYER1_CONTROLS = {"left": pygame.K_LEFT, "right": pygame.K_RIGHT, "jump": pygame.K_UP, "boost": pygame.K_DOWN}
 PLAYER2_CONTROLS = {"left": pygame.K_a, "right": pygame.K_d, "jump": pygame.K_s, "boost": pygame.K_w}
 DELAY_EASYBOT = 10
-<<<<<<< HEAD
 BOUNCE_FACTOR = 0.7
-=======
-BOUNCE_FACTOR = 0.8
->>>>>>> 3921c9d5baa326e257d570bcc7f9d1333ad39a10
 GAME_DURATION = 30000
 
+# Field dimensions
 BW = 115 #block width
 BH = 250 # block height
 TH = 50 #triangle height = triangle width

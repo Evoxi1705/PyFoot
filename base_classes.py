@@ -334,43 +334,6 @@ class Player(Character):
     def draw(self, screen):
         screen.blit(self.image, (self.pos.x, self.pos.y))
 
-class Bot(Character):
-    """
-    Represents the AI-controlled character.
-
-    Makes decisions based on the game state each frame.
-
-    Attributes:
-        player (Player): Reference to the human-controlled character.
-        ball (Ball): Reference to the ball object.
-    """
-    def __init__(self, 
-                 pos: Vector2, 
-                 velocity: Vector2,
-                 height, 
-                 width, 
-                 player,
-                 ball,
-                 **kwargs):
-
-        self.player = player
-        self.ball: "Ball" = ball
-        super().__init__(pos, velocity, height, width, **kwargs)
-        self.image = pygame.image.load("player.png")
-        self.image = pygame.transform.scale(self.image, (width, height))
-
-    def draw(self, screen):
-<<<<<<< HEAD
-        screen.blit(self.image, (self.pos.x, self.pos.y))
-=======
-        pygame.draw.rect(screen, (0, 123, 214), (self.pos.x, self.pos.y, self.width, self.height))
-
->>>>>>> 3921c9d5baa326e257d570bcc7f9d1333ad39a10
-    @abstractmethod
-    def _handle_action(self, dt):
-        """Abstract method — subclasses must implement per-frame AI decision logic."""
-        pass
-
 class EasyBot(Bot):
     """
     AI-controlled character with slow reactions and predictable behavior.
@@ -398,17 +361,11 @@ class EasyBot(Bot):
         self.FSM = FSM()
         self.FSM.states["Attack"] = Attack(self)
         self.FSM.states["Defend"] = Defend(self)
-<<<<<<< HEAD
         self.FSM.set_state("Attack")  # start in attack
-=======
-        self.FSM.SetState("Attack")  # start in attack
-
-    def _handle_action(self, dt, field, starting_time):
->>>>>>> 3921c9d5baa326e257d570bcc7f9d1333ad39a10
 
     def _handle_action(self, dt, field, starting_time):
         """Evaluates the game state and delegates to the FSM each frame."""
-        if self.ball.pos.x < SCREEN_WIDTH/2:
+        if self.ball.pos.x < self.pos.x:
             self.FSM.change_state(self.FSM.states["Attack"])
             self.FSM.execute(dt, field)
         else:
@@ -444,21 +401,13 @@ class MediumBot(Bot):
         self.FSM.states["Defend"] = MediumDefend(self)
 
     def _handle_action(self, dt, field, starting_time):
-<<<<<<< HEAD
         """Evaluates the game state and delegates to the FSM each frame."""
-=======
-        
->>>>>>> 3921c9d5baa326e257d570bcc7f9d1333ad39a10
         if self.ball.pos.x < self.pos.x:
             self.FSM.change_state(self.FSM.states["Attack"])
             self.FSM.execute(dt, field)
         else:
             self.FSM.change_state(self.FSM.states["Defend"])
             self.FSM.execute(dt, field)
-<<<<<<< HEAD
-=======
-
->>>>>>> 3921c9d5baa326e257d570bcc7f9d1333ad39a10
 
 class HardBot(Bot):
     """
@@ -488,13 +437,10 @@ class HardBot(Bot):
         self.FSM.states["Defend"] = HardDefend(self)
         
     def _handle_action(self, dt, field, starting_time):
-<<<<<<< HEAD
         """Evaluates the game state and delegates to the FSM each frame."""
-=======
->>>>>>> 3921c9d5baa326e257d570bcc7f9d1333ad39a10
         # Making the bot faster and faster
         progress = (pygame.time.get_ticks() - starting_time)/GAME_DURATION
-        self.max_speed = self.max_speed*(1 + progress)
+        self.max_speed = MAX_SPEED*(1 + progress)
 
         if self.ball.pos.x < self.pos.x:
             self.FSM.change_state(self.FSM.states["Attack"])
@@ -503,11 +449,6 @@ class HardBot(Bot):
             self.FSM.change_state(self.FSM.states["Defend"])
             self.FSM.execute(dt, field)
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 3921c9d5baa326e257d570bcc7f9d1333ad39a10
-#========================================================
 
 class State:
     """
@@ -533,18 +474,12 @@ class Attack(State):
         super().__init__(bot)
 
     def _should_act(self):
-<<<<<<< HEAD
         """Returns True if enough time has passed since the last action (EasyBot delay)."""
-=======
->>>>>>> 3921c9d5baa326e257d570bcc7f9d1333ad39a10
         now = pygame.time.get_ticks()
         return now - self.bot.last_action > DELAY_EASYBOT
 
     def run(self, dt, field):
-<<<<<<< HEAD
         """Executes attack logic: moves toward the ball and jumps if needed."""
-=======
->>>>>>> 3921c9d5baa326e257d570bcc7f9d1333ad39a10
         # Decision making
         if self._should_act():
             self.bot.last_action = pygame.time.get_ticks()
@@ -582,48 +517,30 @@ class Defend(State):
             self.bot.jump(field)
 
 class MediumAttack(Attack):
-<<<<<<< HEAD
     """Attack state with no reaction delay — acts every frame."""
-=======
->>>>>>> 3921c9d5baa326e257d570bcc7f9d1333ad39a10
     def __init__(self, bot):
         super().__init__(bot)
 
     def _should_act(self):
-<<<<<<< HEAD
         """Always returns True, removing the EasyBot reaction delay."""
         return True
 
 class MediumDefend(Defend):
     """Defend state for MediumBot — same behavior as base Defend."""
-=======
-        return True
-
-class MediumDefend(Defend):
->>>>>>> 3921c9d5baa326e257d570bcc7f9d1333ad39a10
     def __init__(self, bot):
         super().__init__(bot)
 
 class HardAttack(Attack):
-<<<<<<< HEAD
     """Attack state for HardBot — no reaction delay, same as MediumAttack."""
-=======
->>>>>>> 3921c9d5baa326e257d570bcc7f9d1333ad39a10
     def __init__(self, bot):
         super().__init__(bot)
 
     def _should_act(self):
-<<<<<<< HEAD
         """Always returns True."""
         return True
 
 class HardDefend(Defend):
     """Defend state for HardBot — same behavior as base Defend."""
-=======
-        return True
-
-class HardDefend(Defend):
->>>>>>> 3921c9d5baa326e257d570bcc7f9d1333ad39a10
     def __init__(self, bot):
         super().__init__(bot)
 
@@ -648,8 +565,5 @@ class FSM:
         self.current_state = new_state
 
     def execute(self, dt, field):
-<<<<<<< HEAD
         """Runs the current state's logic for this frame."""
-=======
->>>>>>> 3921c9d5baa326e257d570bcc7f9d1333ad39a10
         self.current_state.run(dt, field)
