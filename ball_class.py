@@ -46,7 +46,12 @@ class Ball(DynamicObject):
         self._handle_borders(field)
         self.bounce_triangle(triangles)
         self.ball_player_collision(player)
+<<<<<<< HEAD
         self.ball_player_collision(level)
+=======
+        self.ball_player_collision(easy_bot)
+ 
+>>>>>>> 3921c9d5baa326e257d570bcc7f9d1333ad39a10
         
     def draw(self, screen):
         """Renders the ball as a circle onto the provided Pygame surface."""
