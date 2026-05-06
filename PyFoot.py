@@ -11,13 +11,20 @@ pygame.init()
 clock = pygame.time.Clock()
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-class TempField:
-    def get_top(self): return 0
-    def get_bottom(self): return SCREEN_HEIGHT
-    def get_left(self): return 0 + BW
-    def get_right(self): return SCREEN_WIDTH - BW
+def draw_boundaries(window):
+    block_top_left.draw(window)
+    block_bottom_left.draw(window)
+    block_top_right.draw(window)
+    block_bottom_right.draw(window)
+    block_top.draw(window)
+    block_bottom.draw(window)
 
-field = TempField()
+    triangle_top_left.draw(window)
+    triangle_bottom_left.draw(window)
+    triangle_top_right.draw(window)
+    triangle_bottom_right.draw(window)
+
+field = Field()
 pygame.display.set_caption("Main Menu")
 
 def run_game(difficulty):
@@ -73,24 +80,14 @@ def run_game(difficulty):
             player._handle_inputs(dt, field)
             player.bounce_triangle(triangles)
 
-            block_top_left.draw(window)
-            block_bottom_left.draw(window)
-            block_top_right.draw(window)
-            block_bottom_right.draw(window)
-            block_top.draw(window)
-            block_bottom.draw(window)
-
-            triangle_top_left.draw(window)
-            triangle_bottom_left.draw(window)
-            triangle_top_right.draw(window)
-            triangle_bottom_right.draw(window)
+            draw_boundaries(window)
 
             # Generates power ups at random spots every certain amount of time
             now = pygame.time.get_ticks()
             if now - last_powerup_time > POWERUP_FREQUENCY:
                 last_powerup_time = now
-                x = random.randint(field.get_left(), field.get_right())
-                y = random.randint(field.get_top(), field.get_bottom())
+                x = random.randint(BW, SCREEN_WIDTH - BW)
+                y = random.randint(int(SCREEN_HEIGHT - BH), SCREEN_HEIGHT)
                 new_powerup = random.choice([FasterPowerUp, HighJumpPowerUp, LongerBoostPowerUp])
                 active_powerups.append(new_powerup(Vector2(x, y), POWERUP_HEIGHT, POWERUP_WIDTH))
 

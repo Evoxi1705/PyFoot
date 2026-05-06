@@ -82,9 +82,8 @@ block_top = Rectangle(Vector2(0,-10),SCREEN_WIDTH,10,color=WALL_COLOR)
 block_bottom = Rectangle(Vector2(0, SCREEN_HEIGHT),SCREEN_WIDTH, 10, color=WALL_COLOR)
 
 
-
-
-
-
-
-
+class Field:
+    def get_top(self): return 0
+    def get_bottom(self): return SCREEN_HEIGHT
+    def get_left(self): return BW
+    def get_right(self): return SCREEN_WIDTH - BW
