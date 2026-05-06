@@ -5,8 +5,8 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 JUMP_FORCE = 1000
 BOOST_FORCE = 300
-MAX_SPEED = 500
-MAX_BOOST_SPEED = 3000
+MAX_SPEED = 1000
+MAX_BOOST_SPEED = 2000
 BOOST_TIME = 3000
 WALL_COLOR = (255, 255, 255)
 COOLDOWN = 5000
@@ -16,11 +16,17 @@ ACCELERATION = 3000
 PLAYER1_CONTROLS = {"left": pygame.K_LEFT, "right": pygame.K_RIGHT, "jump": pygame.K_UP, "boost": pygame.K_DOWN}
 PLAYER2_CONTROLS = {"left": pygame.K_a, "right": pygame.K_d, "jump": pygame.K_s, "boost": pygame.K_w}
 DELAY_EASYBOT = 10
-BOUNCE_FACTOR = 0.8
+BOUNCE_FACTOR = 0.7
+GAME_DURATION = 30000
 
 BW = 115 #block width
 BH = 250 # block height
 TH = 50 #triangle height = triangle width
+
+POWERUP_HEIGHT = 30
+POWERUP_WIDTH = 30
+POWERUP_DURATION = 5000
+POWERUP_FREQUENCY = 10000
 
 #UI
 BUTTON_WIDTH = 300

@@ -26,8 +26,7 @@ class Rectangle(StaticObject):
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, (self.pos.x, self.pos.y, self.width, self.height))
 
-
-
+class Triangle(StaticObject):
     
     """
     Class for making the little triangle that we used so we do,'t have 90° angles
@@ -42,10 +41,7 @@ class Rectangle(StaticObject):
         pygame.draw.rect(screen, self.color, (self.pos.x, self.pos.y, self.width, self.height))
         
     """
-
-
-
-class Triangle(StaticObject):
+    
     def __init__(self, pos, size, corner, color=WALL_COLOR):
         super().__init__(pos, size, size)
         self.size = size
@@ -82,9 +78,8 @@ block_top = Rectangle(Vector2(0,-10),SCREEN_WIDTH,10,color=WALL_COLOR)
 block_bottom = Rectangle(Vector2(0, SCREEN_HEIGHT),SCREEN_WIDTH, 10, color=WALL_COLOR)
 
 
-
-
-
-
-
-
+class Field:
+    def get_top(self): return 0
+    def get_bottom(self): return SCREEN_HEIGHT
+    def get_left(self): return BW
+    def get_right(self): return SCREEN_WIDTH - BW
