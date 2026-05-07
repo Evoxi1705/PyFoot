@@ -118,6 +118,8 @@ def run_game(difficulty):
             # Powerup rendering
             for powerup in active_powerups:
                 powerup.draw(window)
+                if powerup.check_collected(player) or powerup.check_collected(level):
+                    active_powerups.remove(powerup)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
