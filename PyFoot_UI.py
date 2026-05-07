@@ -5,6 +5,22 @@ from constants import *
 pygame.init()
 
 def show_menu():
+    """
+    Initializes and manages the main menu graphical user interface.
+    
+    Handles the rendering of the background image, title text, and interactive 
+    difficulty buttons using pygame_gui. The function enters a local event loop 
+    and blocks execution until a difficulty selection is made or the window is closed.
+    
+    Returns:
+        str: The selected difficulty level ("Easy", "Medium", or "Hard").
+        None: If the game loop is terminated (e.g., window closed) without a selection.
+    
+    Note:
+        This function creates its own pygame.display surface and UIManager instance,
+        leveraging "UI_theme.json" for widget styling.
+    """
+    
     window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     manager = pygame_gui.UIManager((SCREEN_WIDTH, SCREEN_HEIGHT), "UI_theme.json")
 

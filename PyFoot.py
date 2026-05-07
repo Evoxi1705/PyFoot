@@ -1,10 +1,10 @@
 import pygame
+import random
 from base_classes import *
 from ball_class import *
 from constants import *
 from wall_class import *
 from PyFoot_UI import show_menu
-import random
 from powerups import *
 
 """
