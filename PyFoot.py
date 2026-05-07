@@ -7,11 +7,24 @@ from PyFoot_UI import show_menu
 import random
 from powerups import *
 
+"""
+This file is the main game loop. It's where all the dots finally connect!
+Running this file will let you play our game,
+Have fun!
+"""
+
 pygame.init()
+pygame.display.set_caption("Main Menu")
 clock = pygame.time.Clock()
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-
+field = Field()
 def draw_boundaries(window):
+    """
+    Draws the boundaries of the field on the screen.
+    
+    Args:
+        window (pygame display): Canvas on which the boundaries have to be drawn.
+    """
     block_top_left.draw(window)
     block_bottom_left.draw(window)
     block_top_right.draw(window)
@@ -24,10 +37,15 @@ def draw_boundaries(window):
     triangle_top_right.draw(window)
     triangle_bottom_right.draw(window)
 
-field = Field()
-pygame.display.set_caption("Main Menu")
 
+# Main function   
 def run_game(difficulty):
+    """
+    Runs the main game loop.
+    
+    Args:
+        difficulty (string): String indicating the chosen difficulty.
+    """
     # Player and ball creation
     player = Player(Vector2(BW + 50, SCREEN_HEIGHT), Vector2(0,0), 100, 175)
     player_score = 0
@@ -50,7 +68,7 @@ def run_game(difficulty):
     run = True
     while run:
         if (pygame.time.get_ticks()- starting_time) < GAME_DURATION:
-            dt = clock.tick(60) / 1000
+            dt = clock.tick(60) / 1000 # dt is roughly 0.016 at 60fps
 
             window.fill((0,0,0))
 
@@ -71,16 +89,19 @@ def run_game(difficulty):
             level.update(dt, field)
             level._handle_action(dt, field, starting_time)
             
+            # Ball rendering
             ball.draw(window)
             ball.update(dt, field, player, level, triangles)
             ball.draw_goal_inscription(window, dt)
 
+            # Player rendering
             player.draw(window)    
             player.update(dt, field)
             player.collision_player_bot(level)
             player._handle_inputs(dt, field)
             player.bounce_triangle(triangles)
 
+            # Arena rendering
             draw_boundaries(window)
 
             # Generates power ups at random spots every certain amount of time
@@ -116,6 +137,7 @@ def run_game(difficulty):
     return "quit"
 
 
+# Switch between menu and game
 while True:
     difficulty = show_menu()
     result = run_game(difficulty)
