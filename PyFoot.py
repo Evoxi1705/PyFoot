@@ -29,9 +29,9 @@ pygame.display.set_caption("Main Menu")
 
 def run_game(difficulty):
     # Player and ball creation
-    player = Player(Vector2(BW + 50, SCREEN_HEIGHT), Vector2(0,0), 50, 100)
+    player = Player(Vector2(BW + 50, SCREEN_HEIGHT), Vector2(0,0), 100, 175)
     player_score = 0
-    ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 30)
+    ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 50)
     
     starting_time = pygame.time.get_ticks()
     active_powerups = []
@@ -39,11 +39,11 @@ def run_game(difficulty):
 
     # Bot creation
     if difficulty == "Easy":
-            level = EasyBot(Vector2(SCREEN_WIDTH - BW - 150, SCREEN_HEIGHT), Vector2(0,0), 50, 100, player, ball)
+            level = EasyBot(Vector2(SCREEN_WIDTH - BW - 150, SCREEN_HEIGHT), Vector2(0,0), 100, 175, player, ball)
     if difficulty == "Medium":
-            level = MediumBot(Vector2(SCREEN_WIDTH - BW - 150, SCREEN_HEIGHT), Vector2(0,0), 50, 100, player, ball)
+            level = MediumBot(Vector2(SCREEN_WIDTH - BW - 150, SCREEN_HEIGHT), Vector2(0,0), 100, 175, player, ball)
     if difficulty == "Hard":
-            level = HardBot(Vector2(SCREEN_WIDTH - BW - 150, SCREEN_HEIGHT), Vector2(0,0), 50, 100, player, ball, starting_time)
+            level = HardBot(Vector2(SCREEN_WIDTH - BW - 150, SCREEN_HEIGHT), Vector2(0,0), 100, 175, player, ball, starting_time)
     bot_score = 0
 
     # Game loop       
