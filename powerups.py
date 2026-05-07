@@ -28,6 +28,22 @@ class PowerUps(StaticObject):
             screen (pygame.Surface): The destination surface for drawing.
         """
         pass
+
+    def check_collected(self, character):
+        cx = self.pos.x
+        cy = self.pos.y
+    
+        closest_x = max(character.pos.x, min(cx, character.pos.x + character.width))
+        closest_y = max(character.pos.y, min(cy, character.pos.y + character.height))
+    
+        dx = cx - closest_x
+        dy = cy - closest_y
+        distance = (dx**2 + dy**2) ** 0.5
+        
+        if distance <= POWERUP_HEIGHT:
+            self.apply(character)
+            return True
+        return False
     
     @abstractmethod
     def apply(self, character):

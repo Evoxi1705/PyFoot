@@ -24,6 +24,8 @@ class Ball(DynamicObject):
         self.bounce_factor = bounce_factor
         self.friction = FRICTION_BALL
         self.goal_timer = 0
+        self.image = pygame.image.load("fireball.png")
+        self.image = pygame.transform.scale(self.image, (radius*2, radius*2))
     
     def update(self, dt, field, player, easy_bot,triangles):
         """
@@ -47,8 +49,8 @@ class Ball(DynamicObject):
         
     def draw(self, screen):
         """Renders the ball as a circle onto the provided Pygame surface."""
-        pygame.draw.circle(screen, (0,255,0), (self.pos.x + self.radius, self.pos.y + self.radius), self.radius)
-        
+        screen.blit(self.image, (self.pos.x, self.pos.y)) 
+               
     def _handle_borders(self, field): 
         """ Keeps the object inside the game world. """
         if self.get_bottom() > field.get_bottom():
