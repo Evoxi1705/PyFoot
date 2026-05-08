@@ -6,18 +6,29 @@ from base_classes import *
 
 
 class PowerUps(StaticObject):
+    """
+    Abstract base class for collectible items that modify character attributes.
+
+    Provides a foundation for temporary or permanent stat modifiers, tracking
+    spawn time for potential expiration logic.
+
+    Attributes:
+        spawn_time (int): The timestamp (in ms) when the object was created.
+    """
     def __init__(self, pos: Vector2, height, width):
         super().__init__(pos, height, width)
         self.spawn_time = pygame.time.get_ticks()
 
     @abstractmethod
     def draw(self, screen):
+        """
+        Renders the power-up icon to the provided Pygame surface.
+
+        Args:
+            screen (pygame.Surface): The destination surface for drawing.
+        """
         pass
-    
-    @abstractmethod
-    def apply(self, charachter):
-        pass
-    
+
     def check_collected(self, character):
         cx = self.pos.x
         cy = self.pos.y
@@ -33,15 +44,30 @@ class PowerUps(StaticObject):
             self.apply(character)
             return True
         return False
+    
+    @abstractmethod
+    def apply(self, character):
+        """
+        Modifies the state or attributes of the target character.
+
+        Args:
+            charachter (BaseCharacter): The character instance to receive the buff.
+        """
+        pass
 
 class FasterPowerUp(PowerUps):
+    """A speed-enhancing collectible that increases movement velocity."""
     def __init__(self, pos, height, width):
         super().__init__(pos, height, width)
 
-    def apply(self, charachter):
-        charachter.max_speed *= 1.5
+    def apply(self, character):
+        """Increases the character's max_speed by a 1.5x multiplier."""
+        character.speed_base = character.max_speed
+        character.max_speed *= 1.5
+        character.faster_collected = pygame.time.get_ticks()
 
     def draw(self, screen):
+        """Draws the powerup as a circle"""
         pygame.draw.circle(screen, (255, 50, 50), (int(self.pos.x), int(self.pos.y)), POWERUP_HEIGHT)
         font = pygame.font.SysFont(None, 36)
         text = font.render("S", True, (255, 255, 255))
@@ -49,13 +75,18 @@ class FasterPowerUp(PowerUps):
         screen.blit(text, rect)
 
 class HighJumpPowerUp(PowerUps):
+    """A verticality collectible that enhances jumping capability."""
     def __init__(self, pos, height, width):
         super().__init__(pos, height, width)
 
-    def apply(self, charachter):
-        charachter.jump_force *= 1.5
+    def apply(self, character):
+        """Increases the character's jump_force by a 1.5x multiplier."""
+        character.jump_base = character.jump_force
+        character.jump_force *= 1.5
+        character.highjump_collected = pygame.time.get_ticks()
 
     def draw(self, screen):
+        """Draws the powerup as a circle"""
         pygame.draw.circle(screen, (50, 50, 255), (int(self.pos.x), int(self.pos.y)), POWERUP_HEIGHT)
         font = pygame.font.SysFont(None, 36)
         text = font.render("J", True, (255, 255, 255))
@@ -63,13 +94,18 @@ class HighJumpPowerUp(PowerUps):
         screen.blit(text, rect)
 
 class LongerBoostPowerUp(PowerUps):
+    """An endurance collectible that extends the duration of the boost state."""
     def __init__(self, pos, height, width):
         super().__init__(pos, height, width)
 
-    def apply(self, charachter):
-        charachter.boost_time *= 1.5
+    def apply(self, character):
+        """Increases the character's boost_time duration by a 1.5x multiplier."""
+        character.boost_base = character.boost_time
+        character.boost_time *= 1.5
+        character.longerboost_collected = pygame.time.get_ticks()
 
     def draw(self, screen):
+        """Draws the powerup as a circle"""
         pygame.draw.circle(screen, (50, 200, 50), (int(self.pos.x), int(self.pos.y)), POWERUP_HEIGHT)
         font = pygame.font.SysFont(None, 36)
         text = font.render("B", True, (255, 255, 255))

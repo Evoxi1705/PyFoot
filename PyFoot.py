@@ -47,7 +47,7 @@ def run_game(difficulty):
         difficulty (string): String indicating the chosen difficulty.
     """
     # Player and ball creation
-    player = Player(Vector2(BW + 50, SCREEN_HEIGHT), Vector2(0,0), 100, 175)
+    player = Player(Vector2(BW + TH, SCREEN_HEIGHT), Vector2(0,0), 100, 175)
     player_score = 0
     ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 50)
     
@@ -57,19 +57,19 @@ def run_game(difficulty):
 
     # Bot creation
     if difficulty == "Easy":
-            level = EasyBot(Vector2(SCREEN_WIDTH - BW - 150, SCREEN_HEIGHT), Vector2(0,0), 100, 175, player, ball)
+            level = EasyBot(Vector2(SCREEN_WIDTH - BW - TH - 100, SCREEN_HEIGHT), Vector2(0,0), 100, 175, player, ball)
     if difficulty == "Medium":
-            level = MediumBot(Vector2(SCREEN_WIDTH - BW - 150, SCREEN_HEIGHT), Vector2(0,0), 100, 175, player, ball)
+            level = MediumBot(Vector2(SCREEN_WIDTH - BW - TH - 100 , SCREEN_HEIGHT), Vector2(0,0), 100, 175, player, ball)
     if difficulty == "Hard":
-            level = HardBot(Vector2(SCREEN_WIDTH - BW - 150, SCREEN_HEIGHT), Vector2(0,0), 100, 175, player, ball, starting_time)
+            level = HardBot(Vector2(SCREEN_WIDTH - BW - TH - 100, SCREEN_HEIGHT), Vector2(0,0), 100, 175, player, ball, starting_time)
     bot_score = 0
 
     # Game loop       
     run = True
     while run:
         if (pygame.time.get_ticks()- starting_time) < GAME_DURATION:
-            dt = clock.tick(60) / 1000 # dt is roughly 0.016 at 60fps
-
+            dt = clock.tick(60) / 1000  # dt is roughly 0.016 at 60fps
+            
             window.fill((0,0,0))
 
             # Score display
@@ -79,15 +79,15 @@ def run_game(difficulty):
             window.blit(score_text, rect)
 
             # Timer display
-            time_left = max(0, GAME_DURATION - (pygame.time.get_ticks() - starting_time))
+            time_left = max(0, GAME_DURATION - (pygame.time.get_ticks() - starting_time)) # max to prevent it going negative in the last frame
             seconds_left = time_left // 1000
-            timer_text = font.render(f"{seconds_left // 60} : {seconds_left % 60:02d}", True, (255, 0, 0))
+            timer_text = font.render(f"{seconds_left // 60} : {seconds_left % 60:02d}", True, (255, 0, 0)) #02d makes it two digits
             timer_rect = timer_text.get_rect(center=(SCREEN_WIDTH / 2, 80))
             window.blit(timer_text, timer_rect)
 
             level.draw(window)
             level.update(dt, field)
-            level._handle_action(dt, field, starting_time)
+            level._handle_action(dt, field, starting_time, active_powerups)
             
             # Ball rendering
             ball.draw(window)
@@ -97,7 +97,6 @@ def run_game(difficulty):
             # Player rendering
             player.draw(window)    
             player.update(dt, field)
-            player.collision_player_bot(level)
             player._handle_inputs(dt, field)
             player.bounce_triangle(triangles)
 
@@ -116,6 +115,7 @@ def run_game(difficulty):
             # Makes the powerups stay for a certain duration
             active_powerups = [p for p in active_powerups if pygame.time.get_ticks() - p.spawn_time < POWERUP_DURATION]
 
+            # Powerup rendering
             for powerup in active_powerups:
                 powerup.draw(window)
                 if powerup.check_collected(player) or powerup.check_collected(level):
@@ -125,6 +125,23 @@ def run_game(difficulty):
                 if event.type == pygame.QUIT:
                     run = False
             
+            # Checks if the powerup has been used for too long and reverts to the original value PLAYER
+            if player.faster_collected != 0 and pygame.time.get_ticks() - player.faster_collected > POWERUP_EFFECT_DURATION:
+                player.max_speed = player.speed_base
+            if player.highjump_collected != 0 and pygame.time.get_ticks() - player.highjump_collected > POWERUP_EFFECT_DURATION:
+                player.jump_force = player.jump_base
+            if player.longerboost_collected != 0 and pygame.time.get_ticks() - player.longerboost_collected > POWERUP_EFFECT_DURATION:
+                player.boost_time = player.boost_base
+
+            # Checks if the powerup has been used for too long and reverts to the original value LEVEL
+            if level.faster_collected != 0 and pygame.time.get_ticks() - level.faster_collected > POWERUP_EFFECT_DURATION:
+                level.max_speed = level.speed_base
+            if level.highjump_collected != 0 and pygame.time.get_ticks() - level.highjump_collected > POWERUP_EFFECT_DURATION:
+                level.jump_force = level.jump_base
+            if level.longerboost_collected != 0 and pygame.time.get_ticks() - level.longerboost_collected > POWERUP_EFFECT_DURATION:
+                level.boost_time = level.boost_base
+                 
+            # Keeps the score of each character
             who_scored = ball.goal(field)
             if who_scored == "player":
                  player_score += 1
@@ -135,7 +152,7 @@ def run_game(difficulty):
         else:
             return "menu"
     return "quit"
-
+            
 
 # Switch between menu and game
 while True:

@@ -116,7 +116,7 @@ class DynamicObject(Entity):
         if self.get_left() < field.get_left():
             self.pos.x = field.get_left()
             self.velocity.x = 0
-            
+
     def collision_player_bot(self, other:"DynamicObject"):
         """
         Resolves overlap between the player and bot using AABB separation.
@@ -148,7 +148,6 @@ class DynamicObject(Entity):
                     self.pos.y += push
                     other.pos.y -= push
                 self.velocity.y, other.velocity.y = other.velocity.y * 0.5, self.velocity.y * 0.5
-
 
     @abstractmethod
     def draw(self, screen):
@@ -189,7 +188,7 @@ class Character(DynamicObject):
                  pos: Vector2, 
                  velocity: Vector2,
                  height, 
-                 width, 
+                 width,
                  jump_force=JUMP_FORCE, 
                  boost_force=BOOST_FORCE, 
                  boost_time=BOOST_TIME,
@@ -205,6 +204,12 @@ class Character(DynamicObject):
         self.max_boost_speed = max_boost_speed
         self.cooldown_time = cooldown_time
 
+        self.speed_base = MAX_SPEED
+        self.jump_base = JUMP_FORCE
+        self.boost_base = BOOST_TIME
+        self.faster_collected = 0
+        self.highjump_collected = 0
+        self.longerboost_collected = 0
         self.is_boosting = False 
         self.boost_start = 0
         self.friction = FRICTION_CARS
@@ -309,6 +314,9 @@ class Player(Character):
         self.image = pygame.transform.scale(self.image, (width, height))
 
     def _handle_inputs(self, dt, field):
+        """
+        Interprets the input from the player.
+        """
         keys = pygame.key.get_pressed()
 
         if keys[self.controls["left"]]:
@@ -351,10 +359,10 @@ class Bot(Character):
         self.image = pygame.image.load("race_car.png")
         self.image = pygame.transform.scale(self.image, (width, height))
 
-
     def draw(self, screen):
         """Renders the bot as a rectangle onto the provided Pygame surface."""
         screen.blit(self.image, (self.pos.x, self.pos.y))
+
     @abstractmethod
     def _handle_action(self, dt):
         """Abstract method — subclasses must implement per-frame AI decision logic."""
@@ -389,15 +397,15 @@ class EasyBot(Bot):
         self.FSM.states["Defend"] = Defend(self)
         self.FSM.set_state("Attack")  # start in attack
 
-    def _handle_action(self, dt, field, starting_time):
+    def _handle_action(self, dt, field, starting_time, active_powerups=None):
         """Evaluates the game state and delegates to the FSM each frame."""
         if self.ball.pos.x < self.pos.x:
             self.FSM.change_state(self.FSM.states["Attack"])
-            self.FSM.execute(dt, field)
+            self.FSM.execute(dt, field, active_powerups)
         else:
             self.FSM.change_state(self.FSM.states["Defend"])
-            self.FSM.execute(dt, field)
-       
+            self.FSM.execute(dt, field, active_powerups)
+
 class MediumBot(Bot):
     """
     AI-controlled character with no reaction delay and smarter positioning.
@@ -426,14 +434,22 @@ class MediumBot(Bot):
         self.FSM.states["Attack"] = MediumAttack(self)
         self.FSM.states["Defend"] = MediumDefend(self)
 
-    def _handle_action(self, dt, field, starting_time):
+    def _handle_action(self, dt, field, starting_time, active_powerups=None):
         """Evaluates the game state and delegates to the FSM each frame."""
-        if self.ball.pos.x < self.pos.x:
+        if active_powerups:
+            nearest = active_powerups[0]
+            if nearest.pos.x < self.pos.x:
+                self.move_left(dt)
+            else:
+                self.move_right(dt)
+            if nearest.pos.y < self.get_top():
+                self.jump(field)
+        elif self.ball.pos.x < self.pos.x:
             self.FSM.change_state(self.FSM.states["Attack"])
-            self.FSM.execute(dt, field)
+            self.FSM.execute(dt, field, active_powerups)
         else:
             self.FSM.change_state(self.FSM.states["Defend"])
-            self.FSM.execute(dt, field)
+            self.FSM.execute(dt, field, active_powerups)
 
 class HardBot(Bot):
     """
@@ -462,19 +478,29 @@ class HardBot(Bot):
         self.FSM.states["Attack"] = HardAttack(self)
         self.FSM.states["Defend"] = HardDefend(self)
         
-    def _handle_action(self, dt, field, starting_time):
+    def _handle_action(self, dt, field, starting_time, active_powerups=None):
         """Evaluates the game state and delegates to the FSM each frame."""
         # Making the bot faster and faster
         progress = (pygame.time.get_ticks() - starting_time)/GAME_DURATION
         self.max_speed = MAX_SPEED*(1 + progress)
 
-        if self.ball.pos.x < self.pos.x:
+        # Go for powerup only when ball is not on the bot's side
+        if active_powerups and self.ball.pos.x > self.pos.x:
+            nearest = active_powerups[0]
+            if nearest.pos.x < self.pos.x:
+                self.move_left(dt)
+            else:
+                self.move_right(dt)
+            if nearest.pos.y < self.get_top():
+                self.jump(field)
+        elif self.ball.pos.x < self.pos.x:
             self.FSM.change_state(self.FSM.states["Attack"])
-            self.FSM.execute(dt, field)
+            self.FSM.execute(dt, field, active_powerups)
         else:
             self.FSM.change_state(self.FSM.states["Defend"])
-            self.FSM.execute(dt, field)
+            self.FSM.execute(dt, field, active_powerups)
 
+#========================================================
 
 class State:
     """
@@ -486,7 +512,7 @@ class State:
     def __init__(self, bot):
         self.bot = bot
 
-    def execute(self, dt, field):
+    def execute(self, dt, field, active_powerups=None):
         pass
 
 class Attack(State):
@@ -504,7 +530,7 @@ class Attack(State):
         now = pygame.time.get_ticks()
         return now - self.bot.last_action > DELAY_EASYBOT
 
-    def run(self, dt, field):
+    def run(self, dt, field, active_powerups=None):
         """Executes attack logic: moves toward the ball and jumps if needed."""
         # Decision making
         if self._should_act():
@@ -517,7 +543,7 @@ class Attack(State):
             if self.bot.ball.get_bottom() < self.bot.get_top():
                 self.bot.jump(field)
 
-        # Boost execution   
+        # Boost execution
         if self.bot.ball.pos.x > SCREEN_WIDTH/2:
             self.bot.boost()
 
@@ -535,7 +561,7 @@ class Defend(State):
     def __init__(self, bot):
         super().__init__(bot)
 
-    def run(self, dt, field):
+    def run(self, dt, field, active_powerups=None):
         """Executes defend logic: moves to goal position and jumps if needed."""
         if self.bot.pos.x < (SCREEN_WIDTH - BW):
             self.bot.move_right(dt)
@@ -590,6 +616,6 @@ class FSM:
         """Directly sets the active state to a State instance."""
         self.current_state = new_state
 
-    def execute(self, dt, field):
+    def execute(self, dt, field, active_powerups=None):
         """Runs the current state's logic for this frame."""
-        self.current_state.run(dt, field)
+        self.current_state.run(dt, field, active_powerups)
