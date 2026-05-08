@@ -4,7 +4,7 @@ from base_classes import *
 from ball_class import *
 from constants import *
 from wall_class import *
-from PyFoot_UI import show_menu
+from PyFoot_UI import show_menu, show_end_screen
 from powerups import *
 
 """
@@ -21,7 +21,7 @@ pygame.display.set_caption("Main Menu")
 clock = pygame.time.Clock()
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 field = Field()
-background = pygame.transform.scale(pygame.image.load("grafiti.png"), (SCREEN_WIDTH, SCREEN_HEIGHT))
+background = pygame.transform.scale(pygame.image.load("grafiti_rood.png"), (SCREEN_WIDTH, SCREEN_HEIGHT))
 def draw_boundaries(window):
     """
     Draws the boundaries of the field on the screen.
@@ -154,7 +154,7 @@ def run_game(difficulty):
 
             pygame.display.flip()
         else:
-            return "menu"
+            return show_end_screen(player_score, bot_score)
     return "quit"
             
 

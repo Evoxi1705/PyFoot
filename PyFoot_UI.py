@@ -72,3 +72,55 @@ def show_menu():
         pygame.display.flip()
     pygame.quit()
 
+
+def show_end_screen(player_score, bot_score):
+    """
+    Displays the end screen with the result and final score.
+
+    Returns:
+        str: "menu" if the player clicks Back to Main Menu, "quit" if they click Quit.
+    """
+    window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    manager = pygame_gui.UIManager((SCREEN_WIDTH, SCREEN_HEIGHT), "UI_theme.json")
+
+    bg = pygame.image.load("Rocket League Sideswipe Season 24.webp")
+    bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+    menu_button_rect = pygame.Rect(SCREEN_WIDTH/2 - BUTTON_WIDTH/2, 3*SCREEN_HEIGHT/5 - BUTTON_HEIGHT/2, BUTTON_WIDTH, BUTTON_HEIGHT)
+    quit_button_rect = pygame.Rect(SCREEN_WIDTH/2 - BUTTON_WIDTH/2, 4*SCREEN_HEIGHT/5 - BUTTON_HEIGHT/2, BUTTON_WIDTH, BUTTON_HEIGHT)
+
+    menu_button = pygame_gui.elements.UIButton(menu_button_rect, "MAIN MENU", manager)
+    quit_button = pygame_gui.elements.UIButton(quit_button_rect, "QUIT", manager)
+
+    result_text = "You won!" if player_score > bot_score else "You lost!" if bot_score > player_score else "Draw!"
+
+    clock = pygame.time.Clock()
+    run = True
+    while run:
+
+        window.blit(bg, (0, 0))
+        dt = clock.tick(60) / 1000
+        manager.update(dt)
+
+        font_big = pygame.font.SysFont("Arial", 80, bold=True)
+        font_score = pygame.font.SysFont("Arial", 50)
+
+        result_surface = font_big.render(result_text, True, (0, 71, 255))
+        score_surface = font_score.render(f"{player_score}  -  {bot_score}", True, (0, 71, 255))
+
+        window.blit(result_surface, (SCREEN_WIDTH/2 - result_surface.get_width()/2, SCREEN_HEIGHT/5))
+        window.blit(score_surface, (SCREEN_WIDTH/2 - score_surface.get_width()/2, SCREEN_HEIGHT/3))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return "quit"
+            manager.process_events(event)
+            if event.type == pygame_gui.UI_BUTTON_START_PRESS:
+                if event.ui_element == menu_button:
+                    return "menu"
+                if event.ui_element == quit_button:
+                    return "quit"
+
+        manager.draw_ui(window)
+        
+        pygame.display.flip()
