@@ -74,15 +74,15 @@ class Field:
     def get_right(self): return SCREEN_WIDTH - BW
     
 # Defining the perimeter blocks
-triangle_bottom_left  = Triangle(Vector2(BW, SCREEN_HEIGHT - TH), TH, "bottom-left", color=(255, 182, 193))
-triangle_top_left     = Triangle(Vector2(BW, 0), TH, "top-left", color=(255, 182, 193))
-triangle_bottom_right = Triangle(Vector2(SCREEN_WIDTH - BW - TH, SCREEN_HEIGHT - TH), TH, "bottom-right", color=(0, 206, 209))
-triangle_top_right    = Triangle(Vector2(SCREEN_WIDTH - BW - TH, 0), TH, "top-right", color=(0, 206, 209))
+triangle_bottom_left  = Triangle(Vector2(BW, SCREEN_HEIGHT - TH), TH, "bottom-left", color=(255, 0, 0))
+triangle_top_left     = Triangle(Vector2(BW, 0), TH, "top-left", color=(255, 0, 0))
+triangle_bottom_right = Triangle(Vector2(SCREEN_WIDTH - BW - TH, SCREEN_HEIGHT - TH), TH, "bottom-right", color=(0, 0, 0))
+triangle_top_right    = Triangle(Vector2(SCREEN_WIDTH - BW - TH, 0), TH, "top-right", color=(0, 0, 0))
 
-block_top_left     = Rectangle(Vector2(0,  0),  BW, BH, color=(255, 182, 193))
-block_bottom_left  = Rectangle(Vector2(0,  SCREEN_HEIGHT - BH), BW, BH, color=(255, 182, 193))
-block_top_right    = Rectangle(Vector2(SCREEN_WIDTH - BW, 0),  BW, BH, color=(0, 206, 209))
-block_bottom_right = Rectangle(Vector2(SCREEN_WIDTH - BW, SCREEN_HEIGHT - BH), BW, BH, color=(0, 206, 209))
+block_top_left     = Rectangle(Vector2(0,  0),  BW, BH, color=(255, 0, 0))
+block_bottom_left  = Rectangle(Vector2(0,  SCREEN_HEIGHT - BH), BW, BH, color=(255, 0, 0))
+block_top_right    = Rectangle(Vector2(SCREEN_WIDTH - BW, 0),  BW, BH, color=(0, 0, 0))
+block_bottom_right = Rectangle(Vector2(SCREEN_WIDTH - BW, SCREEN_HEIGHT - BH), BW, BH, color=(0, 0, 0))
 block_top          = Rectangle(Vector2(0,-10),SCREEN_WIDTH,10,color=WALL_COLOR)
 block_bottom       = Rectangle(Vector2(0, SCREEN_HEIGHT),SCREEN_WIDTH, 10, color=WALL_COLOR)
 
