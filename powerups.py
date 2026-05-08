@@ -62,7 +62,9 @@ class FasterPowerUp(PowerUps):
 
     def apply(self, character):
         """Increases the character's max_speed by a 1.5x multiplier."""
+        character.speed_base = character.max_speed
         character.max_speed *= 1.5
+        character.faster_collected = pygame.time.get_ticks()
 
     def draw(self, screen):
         """Draws the powerup as a circle"""
@@ -79,7 +81,9 @@ class HighJumpPowerUp(PowerUps):
 
     def apply(self, character):
         """Increases the character's jump_force by a 1.5x multiplier."""
+        character.jump_base = character.jump_force
         character.jump_force *= 1.5
+        character.highjump_collected = pygame.time.get_ticks()
 
     def draw(self, screen):
         """Draws the powerup as a circle"""
@@ -96,7 +100,9 @@ class LongerBoostPowerUp(PowerUps):
 
     def apply(self, character):
         """Increases the character's boost_time duration by a 1.5x multiplier."""
+        character.boost_base = character.boost_time
         character.boost_time *= 1.5
+        character.longerboost_collected = pygame.time.get_ticks()
 
     def draw(self, screen):
         """Draws the powerup as a circle"""
