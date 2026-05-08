@@ -59,6 +59,8 @@ class FasterPowerUp(PowerUps):
     """A speed-enhancing collectible that increases movement velocity."""
     def __init__(self, pos, height, width):
         super().__init__(pos, height, width)
+        self.image = pygame.image.load("jump powerup.png")
+        self.image = pygame.transform.scale(self.image, (POWERUP_HEIGHT*2, POWERUP_HEIGHT*2))
 
     def apply(self, character):
         """Increases the character's max_speed by a 1.5x multiplier."""
@@ -68,16 +70,14 @@ class FasterPowerUp(PowerUps):
 
     def draw(self, screen):
         """Draws the powerup as a circle"""
-        pygame.draw.circle(screen, (255, 50, 50), (int(self.pos.x), int(self.pos.y)), POWERUP_HEIGHT)
-        font = pygame.font.SysFont(None, 36)
-        text = font.render("S", True, (255, 255, 255))
-        rect = text.get_rect(center=(int(self.pos.x), int(self.pos.y)))
-        screen.blit(text, rect)
+        screen.blit(self.image, (self.pos.x - POWERUP_HEIGHT, self.pos.y - POWERUP_HEIGHT))
 
 class HighJumpPowerUp(PowerUps):
     """A verticality collectible that enhances jumping capability."""
     def __init__(self, pos, height, width):
         super().__init__(pos, height, width)
+        self.image = pygame.image.load("jump powerup.png")
+        self.image = pygame.transform.scale(self.image, (POWERUP_HEIGHT*2, POWERUP_HEIGHT*2))
 
     def apply(self, character):
         """Increases the character's jump_force by a 1.5x multiplier."""
@@ -87,16 +87,14 @@ class HighJumpPowerUp(PowerUps):
 
     def draw(self, screen):
         """Draws the powerup as a circle"""
-        pygame.draw.circle(screen, (50, 50, 255), (int(self.pos.x), int(self.pos.y)), POWERUP_HEIGHT)
-        font = pygame.font.SysFont(None, 36)
-        text = font.render("J", True, (255, 255, 255))
-        rect = text.get_rect(center=(int(self.pos.x), int(self.pos.y)))
-        screen.blit(text, rect)
-
+        screen.blit(self.image, (self.pos.x - POWERUP_HEIGHT, self.pos.y - POWERUP_HEIGHT))
+        
 class LongerBoostPowerUp(PowerUps):
     """An endurance collectible that extends the duration of the boost state."""
     def __init__(self, pos, height, width):
         super().__init__(pos, height, width)
+        self.image = pygame.image.load("jump powerup.png")
+        self.image = pygame.transform.scale(self.image, (POWERUP_HEIGHT*2, POWERUP_HEIGHT*2))
 
     def apply(self, character):
         """Increases the character's boost_time duration by a 1.5x multiplier."""
@@ -106,8 +104,4 @@ class LongerBoostPowerUp(PowerUps):
 
     def draw(self, screen):
         """Draws the powerup as a circle"""
-        pygame.draw.circle(screen, (50, 200, 50), (int(self.pos.x), int(self.pos.y)), POWERUP_HEIGHT)
-        font = pygame.font.SysFont(None, 36)
-        text = font.render("B", True, (255, 255, 255))
-        rect = text.get_rect(center=(int(self.pos.x), int(self.pos.y)))
-        screen.blit(text, rect)
+        screen.blit(self.image, (self.pos.x - POWERUP_HEIGHT, self.pos.y - POWERUP_HEIGHT))

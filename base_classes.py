@@ -499,8 +499,6 @@ class HardBot(Bot):
             self.FSM.change_state(self.FSM.states["Defend"])
             self.FSM.execute(dt, field, active_powerups)
 
-#========================================================
-
 class State:
     """
     Base class for all FSM states.
