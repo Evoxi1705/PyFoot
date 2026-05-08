@@ -51,7 +51,7 @@ def run_game(difficulty):
         difficulty (string): String indicating the chosen difficulty.
     """
     # Player and ball creation
-    player = Player(Vector2(BW + TH, SCREEN_HEIGHT), Vector2(0,0), 100, 190)
+    player = Player(Vector2(BW + TH, SCREEN_HEIGHT), Vector2(0,0), 80, 190)
     player_score = 0
     ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 50)
     
@@ -61,11 +61,11 @@ def run_game(difficulty):
 
     # Bot creation
     if difficulty == "Easy":
-            level = EasyBot(Vector2(SCREEN_WIDTH - BW - TH - 100, SCREEN_HEIGHT), Vector2(0,0), 100, 190, player, ball)
+            level = EasyBot(Vector2(SCREEN_WIDTH - BW - TH - 100, SCREEN_HEIGHT), Vector2(0,0), 80, 190, player, ball)
     if difficulty == "Medium":
-            level = MediumBot(Vector2(SCREEN_WIDTH - BW - TH - 100 , SCREEN_HEIGHT), Vector2(0,0), 100, 190, player, ball)
+            level = MediumBot(Vector2(SCREEN_WIDTH - BW - TH - 100 , SCREEN_HEIGHT), Vector2(0,0), 80, 190, player, ball)
     if difficulty == "Hard":
-            level = HardBot(Vector2(SCREEN_WIDTH - BW - TH - 100, SCREEN_HEIGHT), Vector2(0,0), 100, 190, player, ball, starting_time)
+            level = HardBot(Vector2(SCREEN_WIDTH - BW - TH - 100, SCREEN_HEIGHT), Vector2(0,0), 80, 190, player, ball, starting_time)
     bot_score = 0
 
     # Game loop       

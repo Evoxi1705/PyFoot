@@ -309,7 +309,7 @@ class Player(Character):
         
         self.controls = controls
         super().__init__(pos, velocity, height, width, **kwargs)
-        self.image = pygame.image.load("car.png")
+        self.image = pygame.image.load("redcar.png")
         self.image = pygame.transform.scale(self.image, (width, height))
 
     def _handle_inputs(self, dt, field):
@@ -355,7 +355,7 @@ class Bot(Character):
         self.player = player
         self.ball: "Ball" = ball
         super().__init__(pos, velocity, height, width, **kwargs)
-        self.image = pygame.image.load("race_car.png")
+        self.image = pygame.image.load("blackcar.png")
         self.image = pygame.transform.scale(self.image, (width, height))
 
     def draw(self, screen):
