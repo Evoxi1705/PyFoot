@@ -13,10 +13,6 @@ Running this file will let you play our game,
 Have fun!
 """
 
-pygame.init()
-pygame.mixer.init()
-pygame.mixer.music.load("Formula 1 Theme [_QmiNC9d788].mp3")
-pygame.mixer.music.play(-1) 
 pygame.display.set_caption("Main Menu")
 clock = pygame.time.Clock()
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -50,6 +46,8 @@ def run_game(difficulty):
     Args:
         difficulty (string): String indicating the chosen difficulty.
     """
+    pygame.mixer.music.play(-1)
+
     # Player and ball creation
     player = Player(Vector2(BW + TH, SCREEN_HEIGHT), Vector2(0,0), 80, 190)
     player_score = 0
@@ -154,11 +152,15 @@ def run_game(difficulty):
 
             pygame.display.flip()
         else:
+            pygame.mixer.music.stop()
             return show_end_screen(player_score, bot_score)
+    pygame.mixer.music.stop()
     return "quit"
             
+pygame.mixer.init()
+pygame.mixer.music.load("Formula 1 Theme [_QmiNC9d788].mp3")
 
-# Switch between menu and game
+# Gives the selected difficulty to the game runner
 while True:
     difficulty = show_menu()
     result = run_game(difficulty)
