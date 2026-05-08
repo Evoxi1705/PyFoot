@@ -18,7 +18,7 @@ pygame.display.set_caption("Main Menu")
 clock = pygame.time.Clock()
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 field = Field()
-background = pygame.transform.scale(pygame.image.load("grafiti.png"), (SCREEN_WIDTH, SCREEN_HEIGHT))
+background = pygame.transform.scale(pygame.image.load("grafiti_rood.png"), (SCREEN_WIDTH, SCREEN_HEIGHT))
 def draw_boundaries(window):
     """
     Draws the boundaries of the field on the screen.
