@@ -23,9 +23,6 @@ def show_menu():
     window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     manager = pygame_gui.UIManager((SCREEN_WIDTH, SCREEN_HEIGHT), "UI_theme.json")
 
-    # Background
-    bg = pygame.image.load("Rocket League Sideswipe Season 24.webp")
-    bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     # Title
     # title_rect = pygame.Rect(SCREEN_WIDTH/2 - TEXT_WIDTH/2, SCREEN_HEIGHT/5 - BUTTON_HEIGHT/2, TEXT_WIDTH, TEXT_HEIGHT)
@@ -46,13 +43,12 @@ def show_menu():
 
     while run:
 
-        window.fill((250,250,250))
-        window.blit(bg, (0,0))
+        window.fill((255, 255, 255))
         dt = clock.tick(60) / 1000 
         manager.update(dt)
 
         font = pygame.font.SysFont("Arial", 80, bold=True)
-        title_surface = font.render("PyFoot", True, (0, 71, 255))
+        title_surface = font.render("PyFoot", True, (255, 0, 0))
         window.blit(title_surface, (SCREEN_WIDTH/2 - title_surface.get_width()/2, SCREEN_HEIGHT/7)) 
 
         for event in pygame.event.get():
@@ -83,9 +79,6 @@ def show_end_screen(player_score, bot_score):
     window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     manager = pygame_gui.UIManager((SCREEN_WIDTH, SCREEN_HEIGHT), "UI_theme.json")
 
-    bg = pygame.image.load("Rocket League Sideswipe Season 24.webp")
-    bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
-
     menu_button_rect = pygame.Rect(SCREEN_WIDTH/2 - BUTTON_WIDTH/2, 3*SCREEN_HEIGHT/5 - BUTTON_HEIGHT/2, BUTTON_WIDTH, BUTTON_HEIGHT)
     quit_button_rect = pygame.Rect(SCREEN_WIDTH/2 - BUTTON_WIDTH/2, 4*SCREEN_HEIGHT/5 - BUTTON_HEIGHT/2, BUTTON_WIDTH, BUTTON_HEIGHT)
 
@@ -98,15 +91,15 @@ def show_end_screen(player_score, bot_score):
     run = True
     while run:
 
-        window.blit(bg, (0, 0))
+        window.fill((255, 255, 255))
         dt = clock.tick(60) / 1000
         manager.update(dt)
 
         font_big = pygame.font.SysFont("Arial", 80, bold=True)
         font_score = pygame.font.SysFont("Arial", 50)
 
-        result_surface = font_big.render(result_text, True, (0, 71, 255))
-        score_surface = font_score.render(f"{player_score}  -  {bot_score}", True, (0, 71, 255))
+        result_surface = font_big.render(result_text, True, (255, 0, 0))
+        score_surface = font_score.render(f"{player_score}  -  {bot_score}", True, (255, 0, 0))
 
         window.blit(result_surface, (SCREEN_WIDTH/2 - result_surface.get_width()/2, SCREEN_HEIGHT/5))
         window.blit(score_surface, (SCREEN_WIDTH/2 - score_surface.get_width()/2, SCREEN_HEIGHT/3))
@@ -122,5 +115,5 @@ def show_end_screen(player_score, bot_score):
                     return "quit"
 
         manager.draw_ui(window)
-        
+
         pygame.display.flip()
