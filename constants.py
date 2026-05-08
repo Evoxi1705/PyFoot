@@ -28,7 +28,7 @@ OFFSET = 10
 
 # Field dimensions
 BW = 100 #block width
-BH = 250 # block height
+BH = 225 # block height
 TH = 50 #triangle height = triangle width
 
 POWERUP_HEIGHT = 30

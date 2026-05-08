@@ -24,10 +24,10 @@ class Ball(DynamicObject):
         self.bounce_factor = bounce_factor
         self.friction = FRICTION_BALL
         self.goal_timer = 0
-        self.image = pygame.image.load("fireball.png")
+        self.image = pygame.image.load("fireball-removebg-preview.png")
         self.image = pygame.transform.scale(self.image, (radius*2, radius*2))
     
-    def update(self, dt, field, player, easy_bot,triangles):
+    def update(self, dt, field, player, level,triangles):
         """
         Updates the ball's physics, collisions, and goal state each frame.
 
@@ -38,19 +38,20 @@ class Ball(DynamicObject):
             bot (Bot): The AI-controlled character.
             triangles (list): List of Triangle objects for bounce detection.
         """
-        self.player_bot_collision(player, easy_bot)
+        self.player_bot_collision(player, level)
         self._apply_gravity(dt)      
         self._apply_movement(dt)     
         self._apply_friction(dt, field)
         self._handle_borders(field)
         self.bounce_triangle(triangles)
         self.ball_player_collision(player)
-        self.ball_player_collision(easy_bot)
+        self.ball_player_collision(level)
         
     def draw(self, screen):
         """Renders the ball as a circle onto the provided Pygame surface."""
         screen.blit(self.image, (self.pos.x, self.pos.y)) 
-               
+  
+        
     def _handle_borders(self, field): 
         """ Keeps the object inside the game world. """
         if self.get_bottom() > field.get_bottom():
