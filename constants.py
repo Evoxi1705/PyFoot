@@ -24,6 +24,7 @@ PLAYER2_CONTROLS = {"left": pygame.K_a, "right": pygame.K_d, "jump": pygame.K_s,
 DELAY_EASYBOT = 10
 BOUNCE_FACTOR = 0.7
 GAME_DURATION = 30000
+OFFSET = 10
 
 # Field dimensions
 BW = 50 #block width
