@@ -298,7 +298,6 @@ class Character(DynamicObject):
                     self.velocity.x -= dot * normal_x
                     self.velocity.y -= dot * normal_y
 
-
 class Player(Character):
     """
     Represents the human-controlled character.
@@ -319,6 +318,8 @@ class Player(Character):
         
         self.controls = controls
         super().__init__(pos, velocity, height, width, **kwargs)
+        self.image = pygame.image.load("car.png")
+        self.image = pygame.transform.scale(self.image, (width, height))
 
     def _handle_inputs(self, dt, field):
         """
@@ -339,7 +340,7 @@ class Player(Character):
             self.boost()
 
     def draw(self, screen):
-        pygame.draw.rect(screen, (0, 123, 60), (self.pos.x, self.pos.y, self.width, self.height))
+        screen.blit(self.image, (self.pos.x, self.pos.y))
 
 class Bot(Character):
     """
@@ -363,10 +364,12 @@ class Bot(Character):
         self.player = player
         self.ball: "Ball" = ball
         super().__init__(pos, velocity, height, width, **kwargs)
+        self.image = pygame.image.load("race_car.png")
+        self.image = pygame.transform.scale(self.image, (width, height))
 
     def draw(self, screen):
         """Renders the bot as a rectangle onto the provided Pygame surface."""
-        pygame.draw.rect(screen, (0, 123, 214), (self.pos.x, self.pos.y, self.width, self.height))
+        screen.blit(self.image, (self.pos.x, self.pos.y))
 
     @abstractmethod
     def _handle_action(self, dt):
