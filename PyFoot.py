@@ -101,6 +101,7 @@ def run_game(difficulty):
             player.update(dt, field)
             player._handle_inputs(dt, field)
             player.bounce_triangle(triangles)
+            player.collision_player_bot(level)
 
             # Arena rendering
             draw_boundaries(window)

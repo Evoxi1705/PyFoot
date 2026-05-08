@@ -80,6 +80,7 @@ class DynamicObject(Entity):
         self._handle_borders(field)
         self._apply_friction(dt, field)
 
+
     def _apply_movement(self, dt):
         self.pos.x += self.velocity.x * dt
         self.pos.y += self.velocity.y * dt
@@ -131,7 +132,7 @@ class DynamicObject(Entity):
             overlap_y = min(self.get_bottom(), other.get_bottom()) - max(self.get_top(), other.get_top())
             
             if overlap_x < overlap_y:
-                push = overlap_x / 2 + 1.0
+                push = overlap_x / 2 + 2.0
                 if self.pos.x < other.pos.x:
                     self.pos.x -= push
                     other.pos.x += push
