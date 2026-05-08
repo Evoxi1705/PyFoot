@@ -589,7 +589,27 @@ class HardAttack(Attack):
     def _should_act(self):
         """Always returns True."""
         return True
-    
+
+    def run(self, dt, field, active_powerups=None):
+            distance = abs(self.bot.ball.pos.x - self.bot.pos.x)
+            t = distance / self.bot.max_speed if self.bot.max_speed > 0 else 0
+            predicted_x = self.bot.ball.pos.x + self.bot.ball.velocity.x * t
+
+            if self.bot.pos.x < predicted_x:
+                self.bot.current_action = "right"
+            else:
+                self.bot.current_action = "left"
+
+            if self.bot.ball.get_bottom() < self.bot.get_top():
+                self.bot.jump(field)
+
+            if self.bot.ball.pos.x > SCREEN_WIDTH / 2:
+                self.bot.boost()
+
+            if self.bot.current_action == "right":
+                self.bot.move_right(dt)
+            elif self.bot.current_action == "left":
+                self.bot.move_left(dt)    
 
 class HardDefend(Defend):
     """Defend state for HardBot — same behavior as base Defend."""
