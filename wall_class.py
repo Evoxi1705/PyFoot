@@ -66,9 +66,7 @@ triangle_bottom_left  = Triangle(Vector2(BW, SCREEN_HEIGHT - TH), TH, "bottom-le
 triangle_top_left     = Triangle(Vector2(BW, 0), TH, "top-left")
 triangle_bottom_right = Triangle(Vector2(SCREEN_WIDTH - BW - TH, SCREEN_HEIGHT - TH), TH, "bottom-right")
 triangle_top_right    = Triangle(Vector2(SCREEN_WIDTH - BW - TH, 0), TH, "top-right")
-"""
-we can do the exact same thing if we want triangle in the goals
-"""
+
 
 block_top_left = Rectangle(Vector2(0,  0),  BW, BH, color=WALL_COLOR)
 block_bottom_left = Rectangle(Vector2(0,  SCREEN_HEIGHT - BH), BW, BH, color=WALL_COLOR)
