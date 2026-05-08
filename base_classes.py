@@ -590,27 +590,6 @@ class HardAttack(Attack):
         """Always returns True."""
         return True
     
-    def run(self, dt, field, active_powerups=None):
-        """Executes attack logic: moves toward the ball and jumps if needed."""
-        # Decision making
-        if self._should_act():
-            self.bot.last_action = pygame.time.get_ticks()
-            if self.bot.pos.x < self.bot.ball.get_right() + OFFSET:
-                self.bot.current_action = "right"
-            else:
-                self.bot.current_action = "left"
-
-            if self.bot.ball.get_bottom() < self.bot.get_top():
-                self.bot.jump(field)
-
-        # Boost execution
-        if self.bot.ball.pos.x > SCREEN_WIDTH/2:
-            self.bot.boost()
-
-        if self.bot.current_action == "right":
-            self.bot.move_right(dt)
-        elif self.bot.current_action == "left":
-            self.bot.move_left(dt)
 
 class HardDefend(Defend):
     """Defend state for HardBot — same behavior as base Defend."""
