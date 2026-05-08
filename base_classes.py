@@ -255,54 +255,39 @@ class Character(DynamicObject):
             self.velocity.y = -self.jump_force
             
     def bounce_triangle(self, triangles):
-        """
-        Resolves collision between the charachters and triangle corner pieces.
-        Uses closest-point-on-segment math to compute the bounce normal.
-
-        Args:
-            triangles (list): List of Triangle objects to check against.
-        """
-        corners = [(self.pos.x, self.pos.y),(self.pos.x, self.pos.y + self.height), (self.pos.x + self.width, self.pos.y), (self.pos.x + self.width, self.pos.y + self.height)]
-        
-        for triangle in triangles:
-          x, y, s = triangle.pos.x, triangle.pos.y, triangle.size
-        
-          if triangle.corner == "bottom-left":
-              p1, p2 = (x, y), (x + s, y + s)
-          elif triangle.corner == "bottom-right":
-              p1, p2 = (x + s, y), (x, y + s)
-          elif triangle.corner == "top-left":
-              p1, p2 = (x + s, y), (x, y + s)
-          elif triangle.corner == "top-right":
-              p1, p2 = (x, y), (x + s, y + s)
-          
-         
-          edge_x = p2[0] - p1[0]
-          edge_y = p2[1] - p1[1]    
-          edge_length_sqrt = edge_x**2 + edge_y**2
-
+        SQRT2_INV = 1 / (2 ** 0.5) #inward normal have angle 1/(2**0.5)
+        outward = {
+            "bottom-left":  ( SQRT2_INV, -SQRT2_INV),
+            "bottom-right": (-SQRT2_INV, -SQRT2_INV),
+            "top-left":     ( SQRT2_INV,  SQRT2_INV),
+            "top-right":    (-SQRT2_INV,  SQRT2_INV),
+        }
+        corners = [(self.pos.x, self.pos.y),
+                   (self.pos.x, self.pos.y + self.height),
+                   (self.pos.x + self.width, self.pos.y),
+                   (self.pos.x + self.width, self.pos.y + self.height)]
     
-          for cx, cy in corners:
-             t = ((cx - p1[0]) * edge_x + (cy - p1[1]) * edge_y) / edge_length_sqrt
-           
-             closest_x = p1[0] + t * edge_x
-             closest_y = p1[1] + t * edge_y
-            
-             dx = cx - closest_x
-             dy = cy - closest_y
-             distance = (dx**2 + dy**2) ** 0.5
-             
-             if distance <= 6 and distance != 0:
-                normal_x = dx / distance
-                normal_y = dy / distance
-
-                self.pos.x += normal_x * 10
-                self.pos.y += normal_y * 10
-             
-                dot = self.velocity.x * normal_x + self.velocity.y * normal_y
-                if dot < 0:
-                    self.velocity.x -= dot * normal_x
-                    self.velocity.y -= dot * normal_y
+        for triangle in triangles:
+            x, y, s = triangle.pos.x, triangle.pos.y, triangle.size
+            normal_x, normal_y = outward[triangle.corner] #'chosing' the right corner
+    
+            if triangle.corner in ("bottom-left", "top-right"):
+                p1 = (x, y)
+            else:
+                p1 = (x + s, y)
+    
+            for cx, cy in corners:
+                
+                signed_dist = (cx - p1[0]) * normal_x + (cy - p1[1]) * normal_y
+                
+                if signed_dist < 6:
+                    overlap = 6 - signed_dist
+                    self.pos.x += normal_x * overlap
+                    self.pos.y += normal_y * overlap
+                    dot = self.velocity.x * normal_x + self.velocity.y * normal_y
+                    if dot < 0:
+                        self.velocity.x -= dot * normal_x
+                        self.velocity.y -= dot * normal_y
 
 class Player(Character):
     """
