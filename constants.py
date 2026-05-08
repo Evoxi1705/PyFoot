@@ -27,7 +27,7 @@ GAME_DURATION = 30000
 OFFSET = 10
 
 # Field dimensions
-BW = 50 #block width
+BW = 100 #block width
 BH = 250 # block height
 TH = 50 #triangle height = triangle width
 
