@@ -274,7 +274,7 @@ class Character(DynamicObject):
     
             for cx, cy in corners:
                 
-                signed_dist = (cx - p1[0]) * nx + (cy - p1[1]) * ny
+                signed_dist = (cx - p1[0]) * normal_x + (cy - p1[1]) * normal_y
                 
                 if signed_dist < 6:
                     overlap = 6 - signed_dist
@@ -283,7 +283,7 @@ class Character(DynamicObject):
                     dot = self.velocity.x * normal_x + self.velocity.y * normal_y
                     if dot < 0:
                         self.velocity.x -= dot * normal_x
-                        self.velocity.y -= dot * nnormal_y
+                        self.velocity.y -= dot * normal_y
        
 class Player(Character):
     """
