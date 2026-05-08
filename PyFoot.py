@@ -18,6 +18,7 @@ pygame.display.set_caption("Main Menu")
 clock = pygame.time.Clock()
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 field = Field()
+background = pygame.transform.scale(pygame.image.load("grafiti.png"), (SCREEN_WIDTH, SCREEN_HEIGHT))
 def draw_boundaries(window):
     """
     Draws the boundaries of the field on the screen.
@@ -70,7 +71,7 @@ def run_game(difficulty):
         if (pygame.time.get_ticks()- starting_time) < GAME_DURATION:
             dt = clock.tick(60) / 1000  # dt is roughly 0.016 at 60fps
             
-            window.fill((0,0,0))
+            window.blit(background, (0, 0))
 
             # Score display
             font = pygame.font.SysFont(None, 60)
