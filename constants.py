@@ -9,7 +9,7 @@ No need to search through the whole code!
 GRAVITY = 2000
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
-JUMP_FORCE = 1000
+JUMP_FORCE = 1300
 BOOST_FORCE = 300
 MAX_SPEED = 500
 MAX_BOOST_SPEED = 2000
@@ -22,8 +22,8 @@ ACCELERATION = 3000
 PLAYER1_CONTROLS = {"left": pygame.K_LEFT, "right": pygame.K_RIGHT, "jump": pygame.K_UP, "boost": pygame.K_DOWN}
 PLAYER2_CONTROLS = {"left": pygame.K_a, "right": pygame.K_d, "jump": pygame.K_s, "boost": pygame.K_w}
 DELAY_EASYBOT = 10
-BOUNCE_FACTOR = 0.7
-GAME_DURATION = 30000
+BOUNCE_FACTOR = 0.6
+GAME_DURATION = 60000
 OFFSET = 10
 
 # Field dimensions

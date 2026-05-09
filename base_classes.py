@@ -593,7 +593,7 @@ class HardAttack(Attack):
     def run(self, dt, field, active_powerups=None):
             distance = abs(self.bot.ball.pos.x - self.bot.pos.x)
             t = distance / self.bot.max_speed if self.bot.max_speed > 0 else 0
-            predicted_x = self.bot.ball.pos.x + self.bot.ball.velocity.x * t
+            predicted_x = self.bot.ball.get_right() + self.bot.ball.velocity.x * t
 
             if self.bot.pos.x < predicted_x:
                 self.bot.current_action = "right"
