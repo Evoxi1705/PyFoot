@@ -118,37 +118,6 @@ class DynamicObject(Entity):
             self.pos.x = field.get_left()
             self.velocity.x = 0
 
-    def collision_player_bot(self, other:"DynamicObject"):
-        """
-        Resolves overlap between the player and bot using AABB separation.
-        Pushes both characters apart and exchanges velocity components.
-
-        Args:
-            player (Player): The human-controlled character.
-            bot (Bot): The AI-controlled character.
-        """
-        if self.collides_with(other):
-            overlap_x = min(self.get_right(), other.get_right()) - max(self.get_left(), other.get_left())
-            overlap_y = min(self.get_bottom(), other.get_bottom()) - max(self.get_top(), other.get_top())
-            
-            if overlap_x < overlap_y:
-                push = overlap_x / 2 + 2.0
-                if self.pos.x < other.pos.x:
-                    self.pos.x -= push
-                    other.pos.x += push
-                else:
-                    self.pos.x += push
-                    other.pos.x -= push
-                self.velocity.x, other.velocity.x = other.velocity.x * 0.5, self.velocity.x * 0.5
-            else:
-                push = overlap_y / 2 + 1.0
-                if self.pos.y < other.pos.y:
-                    self.pos.y -= push
-                    other.pos.y += push
-                else:
-                    self.pos.y += push
-                    other.pos.y -= push
-                self.velocity.y, other.velocity.y = other.velocity.y * 0.5, self.velocity.y * 0.5
 
     @abstractmethod
     def draw(self, screen):
@@ -289,6 +258,38 @@ class Character(DynamicObject):
                     if dot < 0:
                         self.velocity.x -= dot * normal_x
                         self.velocity.y -= dot * normal_y
+                        
+    def collision_player_bot(self, other:"DynamicObject"):
+        """
+        Resolves overlap between the player and bot using AABB separation.
+        Pushes both characters apart and exchanges velocity components.
+
+        Args:
+            player (Player): The human-controlled character.
+            bot (Bot): The AI-controlled character.
+        """
+        if self.collides_with(other):
+            overlap_x = min(self.get_right(), other.get_right()) - max(self.get_left(), other.get_left())
+            overlap_y = min(self.get_bottom(), other.get_bottom()) - max(self.get_top(), other.get_top())
+            
+            if overlap_x < overlap_y:
+                push = overlap_x / 2 + 2.0
+                if self.pos.x < other.pos.x:
+                    self.pos.x -= push
+                    other.pos.x += push
+                else:
+                    self.pos.x += push
+                    other.pos.x -= push
+                self.velocity.x, other.velocity.x = other.velocity.x * 0.5, self.velocity.x * 0.5
+            else:
+                push = overlap_y / 2 + 1.0
+                if self.pos.y < other.pos.y:
+                    self.pos.y -= push
+                    other.pos.y += push
+                else:
+                    self.pos.y += push
+                    other.pos.y -= push
+                self.velocity.y, other.velocity.y = other.velocity.y * 0.5, self.velocity.y * 0.5
 
 class Player(Character):
     """
