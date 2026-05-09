@@ -38,7 +38,7 @@ class Ball(DynamicObject):
             bot (Bot): The AI-controlled character.
             triangles (list): List of Triangle objects for bounce detection.
         """
-        self.player_bot_collision(player, level)
+
         self._apply_gravity(dt)      
         self._apply_movement(dt)     
         self._apply_friction(dt, field)
@@ -127,7 +127,10 @@ class Ball(DynamicObject):
               if dot < 0:
                   self.velocity.x = (self.velocity.x - 2 * dot * normal_x) * self.bounce_factor
                   self.velocity.y = (self.velocity.y - 2 * dot * normal_y) * self.bounce_factor            
-    
+                  
+                  if abs(self.velocity.x) < 50: self.velocity.x = 50 * (1 if self.velocity.x >= 0 else -1)
+                  if abs(self.velocity.y) < 50: self.velocity.y = 50 * (1 if self.velocity.y >= 0 else -1)    
+
     def ball_player_collision(self, player):
         """
         Resolves collision between the ball and a rectangular character.
@@ -151,7 +154,7 @@ class Ball(DynamicObject):
             normal_x = dx / distance
             normal_y = dy / distance
   
-            overlap = self.radius - distance
+            overlap = self.radius - distance + 1
             self.pos.x += normal_x * overlap
             self.pos.y += normal_y * overlap
             
@@ -170,37 +173,6 @@ class Ball(DynamicObject):
                     self.velocity.x += normal_x * player_dot * self.bounce_factor
                     self.velocity.y += normal_y * player_dot * self.bounce_factor
             
-    def player_bot_collision(self, player, bot):
-        """
-        Resolves overlap between the player and bot using AABB separation.
-        Pushes both characters apart and exchanges velocity components.
-
-        Args:
-            player (Player): The human-controlled character.
-            bot (Bot): The AI-controlled character.
-        """
-        if player.collides_with(bot):
-            overlap_x = min(player.get_right(), bot.get_right()) - max(player.get_left(), bot.get_left())
-            overlap_y = min(player.get_bottom(), bot.get_bottom()) - max(player.get_top(), bot.get_top())
-            
-            if overlap_x < overlap_y:
-                push = overlap_x / 2 + 1.0
-                if player.pos.x < bot.pos.x:
-                    player.pos.x -= push
-                    bot.pos.x += push
-                else:
-                    player.pos.x += push
-                    bot.pos.x -= push
-                player.velocity.x, bot.velocity.x = bot.velocity.x * 0.5, player.velocity.x * 0.5
-            else:
-                push = overlap_y / 2 + 1.0
-                if player.pos.y < bot.pos.y:
-                    player.pos.y -= push
-                    bot.pos.y += push
-                else:
-                    player.pos.y += push
-                    bot.pos.y -= push
-                player.velocity.y, bot.velocity.y = bot.velocity.y * 0.5, player.velocity.y * 0.5
       
     def goal(self, field):
         """
