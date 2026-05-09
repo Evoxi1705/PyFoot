@@ -24,7 +24,7 @@ class Ball(DynamicObject):
         self.bounce_factor = bounce_factor
         self.friction = FRICTION_BALL
         self.goal_timer = 0
-        self.image = pygame.image.load("fireball-removebg-preview.png")
+        self.image = pygame.image.load("media/fireball-removebg-preview.png")
         self.image = pygame.transform.scale(self.image, (radius*2, radius*2))
     
     def update(self, dt, field, player, level,triangles):

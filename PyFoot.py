@@ -4,7 +4,7 @@ from base_classes import *
 from ball_class import *
 from constants import *
 from wall_class import *
-from PyFoot_UI import show_menu, show_end_screen
+from PyFoot_UI import *
 from powerups import *
 
 """
@@ -17,7 +17,7 @@ pygame.display.set_caption("Main Menu")
 clock = pygame.time.Clock()
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 field = Field()
-background = pygame.transform.scale(pygame.image.load("grafiti_rood.png"), (SCREEN_WIDTH, SCREEN_HEIGHT))
+background = pygame.transform.scale(pygame.image.load("media/grafiti_rood.png"), (SCREEN_WIDTH, SCREEN_HEIGHT))
 def draw_boundaries(window):
     """
     Draws the boundaries of the field on the screen.
@@ -159,11 +159,14 @@ def run_game(difficulty):
     return "quit"
             
 pygame.mixer.init()
-pygame.mixer.music.load("Formula 1 Theme [_QmiNC9d788].mp3")
+pygame.mixer.music.load("media/Formula 1 Theme [_QmiNC9d788].mp3")
 
 # Gives the selected difficulty to the game runner
 while True:
     difficulty = show_menu()
+    if difficulty == "tutorial":
+        show_tutorial()
+        continue
     result = run_game(difficulty)
     if result == "quit":
         break
