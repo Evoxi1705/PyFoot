@@ -51,7 +51,7 @@ def run_game(difficulty):
     # Player and ball creation
     player = Player(Vector2(BW + TH, SCREEN_HEIGHT), Vector2(0,0), 70, 210)
     player_score = 0
-    ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(200,-300), 70)
+    ball = Ball(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), Vector2(0,0), 70)
     
     starting_time = pygame.time.get_ticks()
     active_powerups = []

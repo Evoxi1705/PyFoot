@@ -80,6 +80,7 @@ class Ball(DynamicObject):
         Args:
             triangles (list): List of Triangle objects to check against.
         """
+        #center of the ball
         cx = self.pos.x + self.radius
         cy = self.pos.y + self.radius
         
@@ -95,11 +96,13 @@ class Ball(DynamicObject):
           elif triangle.corner == "top-right":
               p1, p2 = (x, y + s), (x + s, y)
           
+          #computing edge vector
           edge_x = p2[0] - p1[0]
           edge_y = p2[1] - p1[1]    
         
           edge_length_sqrt = edge_x**2 + edge_y**2
         
+          #were along the edge is the ball the closest
           t = ((cx - p1[0]) * edge_x + (cy - p1[1]) * edge_y) / edge_length_sqrt
           if t < 0:
               t = 0
@@ -113,23 +116,30 @@ class Ball(DynamicObject):
           dy = cy - closest_y
           distance = (dx**2 + dy**2) ** 0.5
           
-
+          
           if distance <= self.radius and distance != 0:
+              #normalizing distance vector to have the direction the ball should bounce away from
               normal_x = dx / distance
               normal_y = dy / distance
     
+              #the ball is overlapping by radius - distance pixels, and we add 0.5 to avoid direct re-collision
               overlap = self.radius - distance + 0.5
               self.pos.x += normal_x * overlap
               self.pos.y += normal_y * overlap
               
+              #reflecting velocity along the normal
               dot = self.velocity.x * normal_x + self.velocity.y * normal_y
               
+              #dot < 0 means that the ball move towards the triangle, then standard formula for reflexion of velocity 
               if dot < 0:
                   self.velocity.x = (self.velocity.x - 2 * dot * normal_x) * self.bounce_factor
                   self.velocity.y = (self.velocity.y - 2 * dot * normal_y) * self.bounce_factor            
                   
-                  if abs(self.velocity.x) < 50: self.velocity.x = 50 * (1 if self.velocity.x >= 0 else -1)
-                  if abs(self.velocity.y) < 50: self.velocity.y = 50 * (1 if self.velocity.y >= 0 else -1)    
+                  #avoiding that the ball get 'stuck'
+                  if abs(self.velocity.x) < 50: 
+                      self.velocity.x = 50 * (1 if self.velocity.x >= 0 else -1)
+                  if abs(self.velocity.y) < 50: 
+                      self.velocity.y = 50 * (1 if self.velocity.y >= 0 else -1)    
 
     def ball_player_collision(self, player):
         """
@@ -142,6 +152,7 @@ class Ball(DynamicObject):
         cx = self.pos.x + self.radius
         cy = self.pos.y + self.radius
         
+        #finding the edge that is the closest to the ball
         closest_x = max(player.pos.x, min(cx, player.pos.x + player.width))
         closest_y = max(player.pos.y, min(cy, player.pos.y + player.height))
         
@@ -154,10 +165,12 @@ class Ball(DynamicObject):
             normal_x = dx / distance
             normal_y = dy / distance
   
+            #same as earlier but +0.5 wasn't enough for a moving object
             overlap = self.radius - distance + 1
             self.pos.x += normal_x * overlap
             self.pos.y += normal_y * overlap
             
+            #because both objects are moving, we need a relative velocity
             rel_vx = self.velocity.x - player.velocity.x
             rel_vy = self.velocity.y - player.velocity.y
             
@@ -172,7 +185,7 @@ class Ball(DynamicObject):
                 if player_dot > 0:  # player pushing toward ball
                     self.velocity.x += normal_x * player_dot * self.bounce_factor
                     self.velocity.y += normal_y * player_dot * self.bounce_factor
-            
+                    #if we don't use this the boucing against a moving vs a non moving player would be the same
       
     def goal(self, field):
         """
