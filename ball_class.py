@@ -208,7 +208,7 @@ class Ball(DynamicObject):
         if self.goal_timer > 0:
             self.goal_timer -= dt * 1000
             font = pygame.font.SysFont(None, 120)
-            text = font.render("GOAL!", True, (255, 255, 0))
+            text = font.render("GOAL!", True, (255, 0, 0))
             rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
             screen.blit(text, rect)
                     

@@ -59,7 +59,7 @@ class FasterPowerUp(PowerUps):
     """A speed-enhancing collectible that increases movement velocity."""
     def __init__(self, pos, height, width):
         super().__init__(pos, height, width)
-        self.image = pygame.image.load("media/jump powerup.png")
+        self.image = pygame.image.load("media/speed_powerup.png")
         self.image = pygame.transform.scale(self.image, (POWERUP_HEIGHT*2, POWERUP_HEIGHT*2))
 
     def apply(self, character):
@@ -76,7 +76,7 @@ class HighJumpPowerUp(PowerUps):
     """A verticality collectible that enhances jumping capability."""
     def __init__(self, pos, height, width):
         super().__init__(pos, height, width)
-        self.image = pygame.image.load("media/jump powerup.png")
+        self.image = pygame.image.load("media/speed_powerup.png")
         self.image = pygame.transform.scale(self.image, (POWERUP_HEIGHT*2, POWERUP_HEIGHT*2))
 
     def apply(self, character):
