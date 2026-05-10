@@ -133,7 +133,7 @@ def show_tutorial():
     manager = pygame_gui.UIManager((SCREEN_WIDTH, SCREEN_HEIGHT), "UI_theme.json")
 
     # Menu button
-    menu_button_rect = pygame.Rect((SCREEN_WIDTH - BUTTON_WIDTH) - BUTTON_HEIGHT/2, 1.5*BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT)
+    menu_button_rect = pygame.Rect((SCREEN_WIDTH - BUTTON_WIDTH) - BUTTON_HEIGHT/2, 1.5*BUTTON_HEIGHT, BUTTON_HEIGHT, BUTTON_HEIGHT)
     menu_button = pygame_gui.elements.UIButton(menu_button_rect, "MAIN MENU", manager)
 
     # Turorial image

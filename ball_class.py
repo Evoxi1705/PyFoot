@@ -16,14 +16,12 @@ class Ball(DynamicObject):
         radius (int): Radius of the ball in pixels.
         bounce_factor (float): Velocity multiplier applied after a bounce.
         friction (float): Deceleration rate when ball rolls on the ground.
-        goal_timer (int): Countdown in milliseconds for the GOAL inscription display.
     """
     def __init__(self,pos,velocity,radius,bounce_factor=BOUNCE_FACTOR):
         super().__init__(pos, velocity, radius*2, radius*2)
         self.radius = radius
         self.bounce_factor = bounce_factor
         self.friction = FRICTION_BALL
-        self.goal_timer = 0
         self.image = pygame.image.load("media/fireball-removebg-preview.png")
         self.image = pygame.transform.scale(self.image, (radius*2, radius*2))
     
@@ -199,37 +197,12 @@ class Ball(DynamicObject):
             self.pos.y = SCREEN_HEIGHT/2
             self.velocity.x = 0
             self.velocity.y = 0
-            self.goal_timer = 2000
             return "bot"
-            
+
         if self.pos.x + self.radius > SCREEN_WIDTH - BW:
-            self.pos.x = SCREEN_WIDTH/2 
+            self.pos.x = SCREEN_WIDTH/2
             self.pos.y = SCREEN_HEIGHT/2
             self.velocity.x = 0
             self.velocity.y = 0
-            self.goal_timer = 2000
             return "player"
             
-    def draw_goal_inscription(self, screen, dt):
-        """
-        Displays a GOAL inscription at the center of the screen for 2 seconds after a goal.
-
-        Args:
-            screen: The Pygame surface to draw on.
-            dt (float): Delta time in seconds since the last frame.
-        """
-        if self.goal_timer > 0:
-            self.goal_timer -= dt * 1000
-            font = pygame.font.SysFont(None, 120)
-            text = font.render("GOAL!", True, (255, 0, 0))
-            rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
-            screen.blit(text, rect)
-                    
-        
-
-                
-        
-    
-       
-        
-        

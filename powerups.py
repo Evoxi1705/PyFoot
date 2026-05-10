@@ -64,8 +64,9 @@ class FasterPowerUp(PowerUps):
 
     def apply(self, character):
         """Increases the character's max_speed by a 1.5x multiplier."""
-        character.speed_base = character.max_speed
-        character.max_speed *= 1.5
+        if character.faster_collected == 0:
+            character.speed_base = character.max_speed
+        character.max_speed = character.speed_base * 1.5
         character.faster_collected = pygame.time.get_ticks()
 
     def draw(self, screen):
@@ -76,13 +77,14 @@ class HighJumpPowerUp(PowerUps):
     """A verticality collectible that enhances jumping capability."""
     def __init__(self, pos, height, width):
         super().__init__(pos, height, width)
-        self.image = pygame.image.load("media/speed_powerup.png")
+        self.image = pygame.image.load("media/jumppowerup.png")
         self.image = pygame.transform.scale(self.image, (POWERUP_HEIGHT*2, POWERUP_HEIGHT*2))
 
     def apply(self, character):
         """Increases the character's jump_force by a 1.5x multiplier."""
-        character.jump_base = character.jump_force
-        character.jump_force *= 1.5
+        if character.highjump_collected == 0:
+            character.jump_base = character.jump_force
+        character.jump_force = character.jump_base * 1.5
         character.highjump_collected = pygame.time.get_ticks()
 
     def draw(self, screen):
@@ -98,8 +100,9 @@ class LongerBoostPowerUp(PowerUps):
 
     def apply(self, character):
         """Increases the character's boost_time duration by a 1.5x multiplier."""
-        character.boost_base = character.boost_time
-        character.boost_time *= 1.5
+        if character.longerboost_collected == 0:
+            character.boost_base = character.boost_time
+        character.boost_time = character.boost_base * 1.5
         character.longerboost_collected = pygame.time.get_ticks()
 
     def draw(self, screen):

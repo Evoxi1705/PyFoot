@@ -550,12 +550,9 @@ class Attack(State):
             elif self.bot.pos.x > self.bot.ball.pos.x:
                 self.bot.current_action = "left"
 
-            if self.bot.ball.get_bottom() < self.bot.get_top():
+            if (self.bot.ball.get_bottom() < self.bot.get_top() and
+                    abs(self.bot.ball.pos.x - self.bot.pos.x) < self.bot.width):
                 self.bot.jump(field)
-
-        # Boost execution
-        if self.bot.ball.pos.x > SCREEN_WIDTH/2:
-            self.bot.boost()
 
         if self.bot.current_action == "right":
             self.bot.move_right(dt)
@@ -579,7 +576,7 @@ class Defend(State):
             self.bot.jump(field)
 
 class MediumAttack(Attack):
-    """Attack state with no reaction delay — acts every frame."""
+    """Attack state with no reaction delay and offensive boost."""
     def __init__(self, bot):
         super().__init__(bot)
 
@@ -587,13 +584,43 @@ class MediumAttack(Attack):
         """Always returns True, removing the EasyBot reaction delay."""
         return True
 
+    def run(self, dt, field, active_powerups=None):
+        if self.bot.pos.x < self.bot.ball.get_right():
+            self.bot.current_action = "right"
+        elif self.bot.pos.x > self.bot.ball.pos.x:
+            self.bot.current_action = "left"
+
+        if (self.bot.ball.get_bottom() < self.bot.get_top() and
+                abs(self.bot.ball.pos.x - self.bot.pos.x) < self.bot.width):
+            self.bot.jump(field)
+
+        if self.bot.ball.pos.x < SCREEN_WIDTH / 2:
+            self.bot.boost()
+
+        if self.bot.current_action == "right":
+            self.bot.move_right(dt)
+        elif self.bot.current_action == "left":
+            self.bot.move_left(dt)
+
 class MediumDefend(Defend):
-    """Defend state for MediumBot — same behavior as base Defend."""
+    """Defend state that positions between the ball and the bot's goal."""
     def __init__(self, bot):
         super().__init__(bot)
 
+    def run(self, dt, field, active_powerups=None):
+        goal_x = SCREEN_WIDTH - BW
+        target_x = (self.bot.ball.pos.x + goal_x) / 2
+
+        if self.bot.pos.x < target_x - 10:
+            self.bot.move_right(dt)
+        elif self.bot.pos.x > target_x + 10:
+            self.bot.move_left(dt)
+
+        if self.bot.ball.get_bottom() < self.bot.get_top():
+            self.bot.jump(field)
+
 class HardAttack(Attack):
-    """Attack state for HardBot — no reaction delay, same as MediumAttack."""
+    """Attack state for HardBot — intercepts the ball using a 0.2s lookahead."""
     def __init__(self, bot):
         super().__init__(bot)
 
@@ -602,25 +629,23 @@ class HardAttack(Attack):
         return True
 
     def run(self, dt, field, active_powerups=None):
-            distance = abs(self.bot.ball.pos.x - self.bot.pos.x)
-            t = distance / self.bot.max_speed if self.bot.max_speed > 0 else 0
-            predicted_x = self.bot.ball.get_right() + self.bot.ball.velocity.x * t
+        predicted_x = self.bot.ball.pos.x + self.bot.ball.velocity.x * 0.2
 
-            if self.bot.pos.x < predicted_x:
-                self.bot.current_action = "right"
-            else:
-                self.bot.current_action = "left"
+        if self.bot.pos.x < predicted_x:
+            self.bot.current_action = "right"
+        else:
+            self.bot.current_action = "left"
 
-            if self.bot.ball.get_bottom() < self.bot.get_top():
-                self.bot.jump(field)
+        if self.bot.ball.get_bottom() < self.bot.get_top():
+            self.bot.jump(field)
 
-            if self.bot.ball.pos.x > SCREEN_WIDTH / 2:
-                self.bot.boost()
+        if self.bot.ball.pos.x < SCREEN_WIDTH / 2:
+            self.bot.boost()
 
-            if self.bot.current_action == "right":
-                self.bot.move_right(dt)
-            elif self.bot.current_action == "left":
-                self.bot.move_left(dt)    
+        if self.bot.current_action == "right":
+            self.bot.move_right(dt)
+        elif self.bot.current_action == "left":
+            self.bot.move_left(dt)
 
 class HardDefend(Defend):
     """Defend state for HardBot — same behavior as base Defend."""
